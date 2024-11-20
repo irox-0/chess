@@ -40,7 +40,6 @@ bool Game::undoLastMove() {
     board->undoMove(lastMove);
     moveHistory.pop_back();
     
-    // Обновляем состояние игры
     switchTurn();
     updateGameState();
     
@@ -92,7 +91,6 @@ bool Game::saveGame(const std::string& filename) const {
         return false;
     }
 
-    // Сохраняем историю ходов
     for (const auto& move : moveHistory) {
         file << move.toString() << "\n";
     }
@@ -119,7 +117,6 @@ bool Game::loadGame(const std::string& filename) {
     return true;
 }
 
-// Private methods
 bool Game::isMoveLegal(const Move& move) const {
     auto validMoves = getValidMoves();
     return std::find(validMoves.begin(), validMoves.end(), move) != validMoves.end();
@@ -142,4 +139,4 @@ void Game::switchTurn() {
     currentState.switchTurn();
 }
 
-} // namespace Chess
+} 
