@@ -1,6 +1,7 @@
 #pragma once
 #include "Square.hpp"
 #include "Piece.hpp"
+#include "Position.hpp"
 #include <vector>
 #include <memory>
 
@@ -38,10 +39,14 @@ public:
     void initialize();  
     std::string toFEN() const;
     std::string toString() const;
+
+    Position getEnPassantPosition() const { return enPassantPosition; }
+    void setEnPassantPosition(const Position& pos) { enPassantPosition = pos; }
+    void clearEnPassantPosition() { enPassantPosition = Position(-1, -1); }
     
 private:
     std::vector<std::vector<Square>> squares;
-    
+    Position enPassantPosition;
     void setupEmptyBoard();
     void setupFromFEN(const std::string& fen);
     bool isSquareAttackedByPawn(const Position& pos, Piece::Color attackerColor) const;

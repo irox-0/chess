@@ -3,6 +3,7 @@
 
 class Position {
 public:
+    Position();
     Position(int x, int y);
     Position(const std::string& algebraicNotation);  
     int getX() const { return x; }

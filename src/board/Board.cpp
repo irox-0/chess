@@ -89,8 +89,23 @@ bool Board::movePiece(const Position& from, const Position& to) {
         return false;
     }
     
-    Piece* piece = fromSquare->removePiece();
+    Piece* piece = fromSquare->getPiece();
+    
+    if (piece->getType() == Piece::Type::Pawn) {
+        int deltaY = std::abs(to.getY() - from.getY());
+        if (deltaY == 2) {
+            int direction = piece->getColor() == Piece::Color::White ? -1 : 1;
+            setEnPassantPosition(Position(to.getX(), to.getY() + direction));
+        } else {
+            clearEnPassantPosition();
+        }
+    } else {
+        clearEnPassantPosition();
+    }
+    
+    fromSquare->removePiece();
     toSquare->setPiece(piece);
+    
     return true;
 }
 
@@ -203,7 +218,6 @@ bool Board::isSquareAttackedByRook(const Position& pos, Piece::Color attackerCol
 }
 
 bool Board::isSquareAttackedByQueen(const Position& pos, Piece::Color attackerColor) const {
-    // Ферзь может атаковать как слон и ладья
     const std::vector<std::pair<int, int>> directions = {
         {0, 1}, {0, -1}, {1, 0}, {-1, 0},
         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
