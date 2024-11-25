@@ -1,8 +1,7 @@
 #pragma once
 #include "Square.hpp"
-#include "pieces/Piece.hpp"
-#include "pieces/Position.hpp"
 #include <vector>
+#include <string>
 #include <memory>
 
 class Board {
@@ -36,19 +35,21 @@ public:
     bool isStalemate(Piece::Color color) const;
     
     void clear();
-    void initialize();  
+    void initialize();
     std::string toFEN() const;
     std::string toString() const;
 
     Position getEnPassantPosition() const { return enPassantPosition; }
     void setEnPassantPosition(const Position& pos) { enPassantPosition = pos; }
     void clearEnPassantPosition() { enPassantPosition = Position(-1, -1); }
-    
+
 private:
     std::vector<std::vector<Square>> squares;
     Position enPassantPosition;
+
     void setupEmptyBoard();
     void setupFromFEN(const std::string& fen);
+
     bool isSquareAttackedByPawn(const Position& pos, Piece::Color attackerColor) const;
     bool isSquareAttackedByKnight(const Position& pos, Piece::Color attackerColor) const;
     bool isSquareAttackedByBishop(const Position& pos, Piece::Color attackerColor) const;

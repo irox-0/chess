@@ -1,8 +1,11 @@
 #pragma once
 #include "Piece.hpp"
+#include "board/Board.hpp"
+
 
 class Rook : public Piece {
 public:
+    Rook(Color color);
     Rook(Color color, Position position);
     
     std::vector<Position> getPossibleMoves(const Board* board) const override;

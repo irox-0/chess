@@ -5,6 +5,7 @@
 
 class Pawn : public Piece {
 public:
+    Pawn(Color color);
     Pawn(Color color, Position position);
     
     std::vector<Position> getPossibleMoves(const Board* board) const override;

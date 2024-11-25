@@ -1,8 +1,10 @@
 #pragma once
 #include "Position.hpp"
-#include "board/Board.hpp"
 #include <vector>
 #include <memory>
+
+class Board;
+class Square;
 
 class Piece {
 public:
@@ -19,7 +21,7 @@ public:
         Queen,
         King
     };
-
+    Piece(Color color, Type type);
     Piece(Color color, Type type, Position position);
     virtual ~Piece() = default;
 

@@ -1,18 +1,41 @@
 #include "Piece.hpp"
+#include "board/Board.hpp"
+#include "board/Square.hpp"
 #include <algorithm>
 
-Piece::Piece(Color color, Type type, Position position)
+
+
+Piece::Piece(Color color, Type type)
     : color(color)
     , type(type)
-    , position(position)
-    , moved(false) {
+    , position(0, 0)  
+    , moved(false)
+    , value(0)
+{
     switch (type) {
         case Type::Pawn:   value = 1; break;
         case Type::Knight: value = 3; break;
         case Type::Bishop: value = 3; break;
         case Type::Rook:   value = 5; break;
         case Type::Queen:  value = 9; break;
-        case Type::King:   value = 0; break; 
+        case Type::King:   value = 0; break;
+    }
+}
+
+Piece::Piece(Color color, Type type, Position position)
+    : color(color)
+    , type(type)
+    , position(position)
+    , moved(false)
+    , value(0)
+{
+    switch (type) {
+        case Type::Pawn:   value = 1; break;
+        case Type::Knight: value = 3; break;
+        case Type::Bishop: value = 3; break;
+        case Type::Rook:   value = 5; break;
+        case Type::Queen:  value = 9; break;
+        case Type::King:   value = 0; break;
     }
 }
 

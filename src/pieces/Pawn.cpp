@@ -1,5 +1,9 @@
 #include "Pawn.hpp"
 
+Pawn::Pawn(Color color) 
+    : Piece(color, Type::Pawn, Position(0, 0)) {  
+}
+
 Pawn::Pawn(Color color, Position position) 
     : Piece(color, Type::Pawn, position) {
 }
