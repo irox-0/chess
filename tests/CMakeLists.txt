@@ -4,7 +4,7 @@ add_executable(chess_tests
     #test_board.cpp
     #test_square.cpp
     #test_piece.cpp
-    #test_pawn.cpp
+    test_pawn.cpp
     test_rook.cpp
     #test_knight.cpp
     #test_bishop.cpp
