@@ -1,0 +1,19 @@
+Start testing: Nov 25 21:25 Russia TZ 2 Standard Time
+----------------------------------------------------------
+Unable to find executable: D:/cpp/chess1/build/tests/chess_tests.exe
+1/1 Testing: chess_tests
+1/1 Test: chess_tests
+Command: ""
+Directory: D:/cpp/chess1/build/tests
+"chess_tests" start time: 
+Output:
+----------------------------------------------------------
+<end of output>
+Test time =   0.00 sec
+----------------------------------------------------------
+Test Passed.
+"chess_tests" end time: Nov 25 21:25 Russia TZ 2 Standard Time
+"chess_tests" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Nov 25 21:25 Russia TZ 2 Standard Time
