@@ -1,3 +1,0 @@
-chess_tests 0 0
----
-chess_tests

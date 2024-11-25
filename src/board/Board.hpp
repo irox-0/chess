@@ -1,7 +1,7 @@
 #pragma once
 #include "Square.hpp"
-#include "Piece.hpp"
-#include "Position.hpp"
+#include "pieces/Piece.hpp"
+#include "pieces/Position.hpp"
 #include <vector>
 #include <memory>
 

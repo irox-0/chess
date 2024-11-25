@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
-#include "Rook.hpp"
-#include "Board.hpp"
+#include "pieces/Rook.hpp"
+#include "board/Board.hpp"
 
 class RookTest : public ::testing::Test {
 protected:

@@ -1,5 +1,4 @@
 #include "Square.hpp"
-#include "Piece.hpp"
 #include "Board.hpp"
 
 Square::Square(Color color) : 

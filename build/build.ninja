@@ -478,133 +478,133 @@ build cmake_object_order_depends_target_chess_lib: phony || .
 
 build src/CMakeFiles/chess_lib.dir/main.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/main.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\main.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir
 
 build src/CMakeFiles/chess_lib.dir/game/Game.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/game/Game.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\game\Game.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\game
 
 build src/CMakeFiles/chess_lib.dir/game/GameState.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/game/GameState.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\game\GameState.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\game
 
 build src/CMakeFiles/chess_lib.dir/board/Board.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/board/Board.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\board\Board.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\board
 
 build src/CMakeFiles/chess_lib.dir/board/Square.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/board/Square.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\board\Square.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\board
 
 build src/CMakeFiles/chess_lib.dir/pieces/Piece.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/pieces/Piece.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\pieces\Piece.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\pieces
 
 build src/CMakeFiles/chess_lib.dir/pieces/Pawn.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/pieces/Pawn.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\pieces\Pawn.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\pieces
 
 build src/CMakeFiles/chess_lib.dir/pieces/Knight.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/pieces/Knight.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\pieces\Knight.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\pieces
 
 build src/CMakeFiles/chess_lib.dir/pieces/Bishop.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/pieces/Bishop.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\pieces\Bishop.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\pieces
 
 build src/CMakeFiles/chess_lib.dir/pieces/Rook.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/pieces/Rook.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\pieces\Rook.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\pieces
 
 build src/CMakeFiles/chess_lib.dir/pieces/Queen.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/pieces/Queen.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\pieces\Queen.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\pieces
 
 build src/CMakeFiles/chess_lib.dir/pieces/King.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/pieces/King.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\pieces\King.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\pieces
 
 build src/CMakeFiles/chess_lib.dir/pieces/Position.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/pieces/Position.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\pieces\Position.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\pieces
 
 build src/CMakeFiles/chess_lib.dir/moves/Move.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/moves/Move.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\moves\Move.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\moves
 
 build src/CMakeFiles/chess_lib.dir/moves/MoveGenerator.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/moves/MoveGenerator.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\moves\MoveGenerator.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\moves
 
 build src/CMakeFiles/chess_lib.dir/ai/AI.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/ai/AI.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\ai\AI.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\ai
 
 build src/CMakeFiles/chess_lib.dir/io/Console.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/io/Console.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\io\Console.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\io
 
 build src/CMakeFiles/chess_lib.dir/io/NotationParser.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/io/NotationParser.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\io\NotationParser.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\io
 
 build src/CMakeFiles/chess_lib.dir/utils/GameLogger.cpp.obj: CXX_COMPILER__chess_lib_unscanned_ D$:/cpp/chess1/src/utils/GameLogger.cpp || cmake_object_order_depends_target_chess_lib
   DEP_FILE = src\CMakeFiles\chess_lib.dir\utils\GameLogger.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_lib.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_lib.dir\utils
@@ -635,7 +635,7 @@ build cmake_object_order_depends_target_chess_game: phony || cmake_object_order_
 
 build src/CMakeFiles/chess_game.dir/main.cpp.obj: CXX_COMPILER__chess_game_unscanned_ D$:/cpp/chess1/src/main.cpp || cmake_object_order_depends_target_chess_game
   DEP_FILE = src\CMakeFiles\chess_game.dir\main.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/chess1/include
   OBJECT_DIR = src\CMakeFiles\chess_game.dir
   OBJECT_FILE_DIR = src\CMakeFiles\chess_game.dir
@@ -708,7 +708,7 @@ build cmake_object_order_depends_target_chess_tests: phony || cmake_object_order
 
 build tests/CMakeFiles/chess_tests.dir/test_rook.cpp.obj: CXX_COMPILER__chess_tests_unscanned_ D$:/cpp/chess1/tests/test_rook.cpp || cmake_object_order_depends_target_chess_tests
   DEP_FILE = tests\CMakeFiles\chess_tests.dir\test_rook.cpp.obj.d
-  FLAGS = -std=gnu++17
+  FLAGS = -std=gnu++20
   INCLUDES = -ID:/cpp/chess1/src -ID:/cpp/libraries/googletest-1.15.2/googletest/include/gtest/include -ID:/cpp/chess1/include
   OBJECT_DIR = tests\CMakeFiles\chess_tests.dir
   OBJECT_FILE_DIR = tests\CMakeFiles\chess_tests.dir

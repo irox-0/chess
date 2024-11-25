@@ -1,6 +1,6 @@
 #pragma once
 #include "Piece.hpp"
-#include "Board.hpp"
+#include "board/Board.hpp"
 #include <vector>
 
 class Pawn : public Piece {

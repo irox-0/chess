@@ -1,6 +1,6 @@
 #pragma once
 #include "Position.hpp"
-#include "Board.hpp"
+#include "board/Board.hpp"
 #include <vector>
 #include <memory>
 

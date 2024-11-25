@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(chess)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(GTEST_ROOT "D:/cpp/libraries/googletest-1.15.2/googletest/include/gtest")

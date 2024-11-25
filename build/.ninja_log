@@ -1,0 +1,16 @@
+# ninja log v6
+77	263	7542669868582207	src/CMakeFiles/chess_lib.dir/moves/MoveGenerator.cpp.obj	d365d103b559fc3c
+47	205	7542669868283460	src/CMakeFiles/chess_lib.dir/pieces/Bishop.cpp.obj	83e19c3be52d267e
+183	309	7542669869609209	src/CMakeFiles/chess_game.dir/main.cpp.obj	4eae9082a2378142
+17	200	7542669867987136	src/CMakeFiles/chess_lib.dir/main.cpp.obj	93782443d6f99656
+66	811	7542669868474476	src/CMakeFiles/chess_lib.dir/pieces/Position.cpp.obj	89d35f769fdfd391
+99	295	7542669868820208	src/CMakeFiles/chess_lib.dir/io/NotationParser.cpp.obj	b2aa9c688c3f6fa
+61	277	7542669868443532	src/CMakeFiles/chess_lib.dir/pieces/King.cpp.obj	7cd63f406978849a
+88	268	7542669868713698	src/CMakeFiles/chess_lib.dir/ai/AI.cpp.obj	55cad23d61c5d08c
+132	291	7542669869133136	src/CMakeFiles/chess_lib.dir/utils/GameLogger.cpp.obj	1387aadb6e9bfd3e
+71	282	7542669868474476	src/CMakeFiles/chess_lib.dir/moves/Move.cpp.obj	7e2e8f8b2fa6e264
+26	131	7542669868012328	src/CMakeFiles/chess_lib.dir/game/GameState.cpp.obj	ceb2a6e3a081eb74
+55	243	7542669868359964	src/CMakeFiles/chess_lib.dir/pieces/Queen.cpp.obj	bd238d7fc06746f3
+22	183	7542669868012328	src/CMakeFiles/chess_lib.dir/game/Game.cpp.obj	a85c92b597af1126
+94	293	7542669868734028	src/CMakeFiles/chess_lib.dir/io/Console.cpp.obj	7b912779b5708fbf
+44	226	7542669868244544	src/CMakeFiles/chess_lib.dir/pieces/Knight.cpp.obj	5a042ba4d758308a

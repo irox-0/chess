@@ -1,7 +1,6 @@
 #pragma once
-#include "Position.hpp"
-
-class Piece;
+#include "pieces/Position.hpp"
+#include "pieces/Piece.hpp"
 
 class Square {
 public:
