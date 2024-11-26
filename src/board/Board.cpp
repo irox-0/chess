@@ -77,19 +77,19 @@ void Board::initialize() {
     clear();
     
     placePiece(new Rook(Piece::Color::White), Position(0, 0));
-    /*placePiece(new Knight(Piece::Color::White), Position(1, 0));
+    placePiece(new Knight(Piece::Color::White), Position(1, 0));
     placePiece(new Bishop(Piece::Color::White), Position(2, 0));
     placePiece(new Queen(Piece::Color::White), Position(3, 0));
     placePiece(new King(Piece::Color::White), Position(4, 0));
     placePiece(new Bishop(Piece::Color::White), Position(5, 0));
     placePiece(new Knight(Piece::Color::White), Position(6, 0));
     placePiece(new Rook(Piece::Color::White), Position(7, 0));
-    */
+    
     for (int i = 0; i < BOARD_SIZE; ++i) {
         placePiece(new Pawn(Piece::Color::White), Position(i, 1));
     }
     
-    /*placePiece(new Rook(Piece::Color::Black), Position(0, 7));
+    placePiece(new Rook(Piece::Color::Black), Position(0, 7));
     placePiece(new Knight(Piece::Color::Black), Position(1, 7));
     placePiece(new Bishop(Piece::Color::Black), Position(2, 7));
     placePiece(new Queen(Piece::Color::Black), Position(3, 7));
@@ -97,7 +97,7 @@ void Board::initialize() {
     placePiece(new Bishop(Piece::Color::Black), Position(5, 7));
     placePiece(new Knight(Piece::Color::Black), Position(6, 7));
     placePiece(new Rook(Piece::Color::Black), Position(7, 7));
-    */
+    
     for (int i = 0; i < BOARD_SIZE; ++i) {
         placePiece(new Pawn(Piece::Color::Black), Position(i, 6));
     }
@@ -456,10 +456,10 @@ void Board::setupFromFEN(const std::string& fen) {
         switch (pieceChar) {
             case 'p': piece = new Pawn(color); break;
             case 'r': piece = new Rook(color); break;
-            /*case 'n': piece = new Knight(color); break;
+            case 'n': piece = new Knight(color); break;
             case 'b': piece = new Bishop(color); break;
             case 'q': piece = new Queen(color); break;
-            case 'k': piece = new King(color); break;*/
+            case 'k': piece = new King(color); break;
         }
         
         if (piece) {
