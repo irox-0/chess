@@ -1,4 +1,5 @@
 #include "King.hpp"
+#include <algorithm>
 
 King::King(Color color)
     : Piece(color, Type::King, Position(0, 0)) {
@@ -14,26 +15,36 @@ std::vector<Position> King::getPossibleMoves(const Board* board) const {
     }
 
     std::vector<Position> moves;
-    auto basicMoves = getBasicMoves();
-    
-    // Filter basic moves
-    for (const auto& move : basicMoves) {
-        if (!board->isPositionValid(move)) {
-            continue;
-        }
+    const std::vector<std::pair<int, int>> kingOffsets = {
+        {-1, -1}, {-1, 0}, {-1, 1},
+        {0, -1},           {0, 1},
+        {1, -1},  {1, 0},  {1, 1}
+    };
 
-        const Square* targetSquare = board->getSquare(move);
+    for (const auto& [dx, dy] : kingOffsets) {
+        Position newPos = position + Position(dx, dy);
+        if (!board->isPositionValid(newPos)) continue;
+
+        const Square* targetSquare = board->getSquare(newPos);
         if (!targetSquare->isOccupied() || 
             targetSquare->getPiece()->getColor() != color) {
-            if (isSquareSafe(move, board)) {
-                moves.push_back(move);
+            Piece::Color opponentColor = (color == Color::White) ? 
+                                       Color::Black : Color::White;
+            if (!board->isPositionAttacked(newPos, opponentColor)) {
+                moves.push_back(newPos);
             }
         }
     }
-    
-    auto castlingMoves = getCastlingMoves(board);
-    moves.insert(moves.end(), castlingMoves.begin(), castlingMoves.end());
-    
+
+    if (!moved && !board->isCheck(color)) {
+        if (canCastleKingside(board)) {
+            moves.push_back(Position(position.getX() + 2, position.getY()));
+        }
+        if (canCastleQueenside(board)) {
+            moves.push_back(Position(position.getX() - 2, position.getY()));
+        }
+    }
+
     return moves;
 }
 
@@ -43,15 +54,16 @@ std::vector<Position> King::getAttackedSquares(const Board* board) const {
     }
 
     std::vector<Position> moves;
-    auto basicMoves = getBasicMoves();
+    const std::vector<std::pair<int, int>> kingOffsets = {
+        {-1, -1}, {-1, 0}, {-1, 1},
+        {0, -1},           {0, 1},
+        {1, -1},  {1, 0},  {1, 1}
+    };
     
-    for (const auto& move : basicMoves) {
-        if (board->isPositionValid(move)) {
-            const Square* targetSquare = board->getSquare(move);
-            if (!targetSquare->isOccupied() || 
-                targetSquare->getPiece()->getColor() != color) {
-                moves.push_back(move);
-            }
+    for (const auto& [dx, dy] : kingOffsets) {
+        Position newPos = position + Position(dx, dy);
+        if (board->isPositionValid(newPos)) {
+            moves.push_back(newPos);
         }
     }
     
@@ -63,24 +75,27 @@ bool King::canMoveTo(const Position& target, const Board* board) const {
         return false;
     }
 
-    auto castlingMoves = getCastlingMoves(board);
-    for (const auto& move : castlingMoves) {
-        if (move == target) {
+    if (!moved && !board->isCheck(color)) {
+        auto castlingMoves = getCastlingMoves(board);
+        if (std::find(castlingMoves.begin(), castlingMoves.end(), target) != castlingMoves.end()) {
             return true;
         }
     }
 
-    if (!isValidKingMove(target)) {
-        return false;
-    }
-
+    int dx = std::abs(target.getX() - position.getX());
+    int dy = std::abs(target.getY() - position.getY());
+    
+    if (dx > 1 || dy > 1) return false;
+    
     const Square* targetSquare = board->getSquare(target);
     if (targetSquare->isOccupied() && 
         targetSquare->getPiece()->getColor() == color) {
         return false;
     }
 
-    return isSquareSafe(target, board);
+    Piece::Color opponentColor = (color == Color::White) ? 
+                                Color::Black : Color::White;
+    return !board->isPositionAttacked(target, opponentColor);
 }
 
 char King::getSymbol() const {
@@ -97,34 +112,18 @@ bool King::isValidKingMove(const Position& target) const {
     return dx <= 1 && dy <= 1 && (dx > 0 || dy > 0);
 }
 
-std::vector<Position> King::getBasicMoves() const {
-    const std::vector<std::pair<int, int>> kingOffsets = {
-        {-1, -1}, {-1, 0}, {-1, 1},
-        {0, -1},           {0, 1},
-        {1, -1},  {1, 0},  {1, 1}
-    };
-
-    std::vector<Position> moves;
-    for (const auto& [dx, dy] : kingOffsets) {
-        moves.push_back(position + Position(dx, dy));
-    }
-
-    return moves;
-}
-
 std::vector<Position> King::getCastlingMoves(const Board* board) const {
     std::vector<Position> moves;
-    
-    if (moved || board->isCheck(color)) {
-        return moves;
-    }
+    if (moved || board->isCheck(color)) return moves;
+
+    int baseRank = (color == Color::White) ? 0 : 7;
 
     if (canCastleKingside(board)) {
-        moves.push_back(Position(position.getX() + 2, position.getY()));
+        moves.push_back(Position(6, baseRank));
     }
 
     if (canCastleQueenside(board)) {
-        moves.push_back(Position(position.getX() - 2, position.getY()));
+        moves.push_back(Position(2, baseRank));
     }
 
     return moves;
@@ -132,19 +131,20 @@ std::vector<Position> King::getCastlingMoves(const Board* board) const {
 
 bool King::canCastleKingside(const Board* board) const {
     int baseRank = (color == Color::White) ? 0 : 7;
+    Position rookPos(7, baseRank);
     
-    const Square* rookSquare = board->getSquare(7, baseRank);
+    const Square* rookSquare = board->getSquare(rookPos);
     if (!rookSquare->isOccupied() || 
         rookSquare->getPiece()->getType() != Type::Rook ||
         rookSquare->getPiece()->hasMoved()) {
         return false;
     }
 
-    for (int x = 5; x <= 6; x++) {
-        if (board->getSquare(x, baseRank)->isOccupied()) {
-            return false;
-        }
-        if (!isSquareSafe(Position(x, baseRank), board)) {
+    // Проверяем путь
+    for (int x = position.getX() + 1; x < rookPos.getX(); x++) {
+        Position pos(x, baseRank);
+        if (board->getSquare(pos)->isOccupied()) return false;
+        if (board->isPositionAttacked(pos, color == Color::White ? Color::Black : Color::White)) {
             return false;
         }
     }
@@ -154,30 +154,23 @@ bool King::canCastleKingside(const Board* board) const {
 
 bool King::canCastleQueenside(const Board* board) const {
     int baseRank = (color == Color::White) ? 0 : 7;
+    Position rookPos(0, baseRank);
     
-    const Square* rookSquare = board->getSquare(0, baseRank);
+    const Square* rookSquare = board->getSquare(rookPos);
     if (!rookSquare->isOccupied() || 
         rookSquare->getPiece()->getType() != Type::Rook ||
         rookSquare->getPiece()->hasMoved()) {
         return false;
     }
 
-    for (int x = 1; x <= 3; x++) {
-        if (board->getSquare(x, baseRank)->isOccupied()) {
-            return false;
-        }
-        if (x >= 2 && !isSquareSafe(Position(x, baseRank), board)) {
+    for (int x = position.getX() - 1; x > rookPos.getX(); x--) {
+        Position pos(x, baseRank);
+        if (board->getSquare(pos)->isOccupied()) return false;
+        if (board->isPositionAttacked(pos, color == Color::White ? Color::Black : Color::White)) {
+            if (x == 1) continue; 
             return false;
         }
     }
 
     return true;
-}
-
-bool King::isSquareSafe(const Position& pos, const Board* board) const {
-    Board tempBoard(*board);
-    
-    tempBoard.movePiece(position, pos);
-    
-    return !tempBoard.isCheck(color);
 }

@@ -7,7 +7,6 @@
 
 class MoveGenerator {
 public:
-    // Структура для хранения прав на рокировку
     struct CastlingRights {
         bool kingsideWhite = true;
         bool queensideWhite = true;
@@ -29,30 +28,24 @@ public:
 
     MoveGenerator() { castlingRights.reset(); }
 
-    // Основные методы генерации ходов
     static std::vector<Move> generateAllMoves(const Board* board, Piece::Color color);
     static std::vector<Move> generateLegalMoves(const Board* board, const Position& pos);
     static std::vector<Move> generateCaptureMoves(const Board* board, Piece::Color color);
     
-    // Методы для проверки легальности ходов
     static bool isMoveLegal(const Board* board, const Move& move);
     
-    // Методы для работы с рокировкой
     static std::vector<Move> getCastlingMoves(const Board* board, Piece::Color color);
     static bool canCastleKingside(const Board* board, Piece::Color color);
     static bool canCastleQueenside(const Board* board, Piece::Color color);
     
-    // Методы для работы с превращением пешки
     static std::vector<Move> getPromotionMoves(const Board* board, const Position& from, const Position& to);
     
-    // Получение и обновление прав на рокировку
     const CastlingRights& getCastlingRights() const { return castlingRights; }
     void updateCastlingRights(const Move& move);
 
 private:
     CastlingRights castlingRights;
 
-    // Методы генерации ходов для разных типов фигур
     static std::vector<Move> generatePawnMoves(const Board* board, const Position& pos);
     static std::vector<Move> generateKnightMoves(const Board* board, const Position& pos);
     static std::vector<Move> generateBishopMoves(const Board* board, const Position& pos);
@@ -60,15 +53,12 @@ private:
     static std::vector<Move> generateQueenMoves(const Board* board, const Position& pos);
     static std::vector<Move> generateKingMoves(const Board* board, const Position& pos);
     
-    // Вспомогательные методы для проверки специальных ходов
     static bool isEnPassantPossible(const Board* board, const Position& from, const Position& to);
     static bool isPawnPromotion(const Board* board, const Position& from, const Position& to);
     static bool wouldResultInCheck(const Board* board, const Move& move, Piece::Color color);
     
-    // Вспомогательные методы для проверки рокировки
     static bool areCastlingSquaresClear(const Board* board, const Position& kingPos, bool kingside);
     static bool areCastlingSquaresSafe(const Board* board, const Position& kingPos, bool kingside, Piece::Color color);
     
-    // Служебные методы
     static Piece::Color getOppositeColor(Piece::Color color);
 };

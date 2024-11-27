@@ -1,3 +1,4 @@
+enable_testing()
 include(GoogleTest)
 
 add_executable(chess_tests
@@ -13,6 +14,8 @@ add_executable(chess_tests
     #test_move.cpp
     #test_game.cpp
     test_move_generator.cpp
+    test_pieces.cpp
+    #test_game_state.cpp
 )
 
 target_link_libraries(chess_tests
@@ -24,7 +27,7 @@ target_link_libraries(chess_tests
 
 target_include_directories(chess_tests
     PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
 )
 
 gtest_discover_tests(chess_tests)

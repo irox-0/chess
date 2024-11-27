@@ -1,6 +1,5 @@
 #include "Rook.hpp"
 
-
 Rook::Rook(Color color)
     : Piece(color, Type::Rook, Position(0, 0)) { 
 }
@@ -10,11 +9,79 @@ Rook::Rook(Color color, Position position)
 }
 
 std::vector<Position> Rook::getPossibleMoves(const Board* board) const {
-    if (!board) {
-        return std::vector<Position>();
+    std::vector<Position> moves;
+    if (!board) return moves;
+
+    auto pinInfo = checkIfPinned(board);
+    
+    if (pinInfo.isPinned) {
+        Position current = position;
+        
+        while (true) {
+            current = current + pinInfo.pinDirection;
+            if (!board->isPositionValid(current)) break;
+            
+            const Square* targetSquare = board->getSquare(current);
+            if (!targetSquare->isOccupied()) {
+                moves.push_back(current);
+            } else {
+                if (targetSquare->getPiece()->getColor() != color) {
+                    moves.push_back(current);
+                }
+                break;
+            }
+        }
+        
+        current = position;
+        while (true) {
+            current = current - pinInfo.pinDirection;
+            if (!board->isPositionValid(current)) break;
+            
+            const Square* targetSquare = board->getSquare(current);
+            if (!targetSquare->isOccupied()) {
+                moves.push_back(current);
+            } else {
+                if (targetSquare->getPiece()->getColor() != color) {
+                    moves.push_back(current);
+                }
+                break;
+            }
+        }
+        
+        return moves;
     }
 
-    return getStraightMoves(board);
+    const std::vector<std::pair<int, int>> directions = {
+        {0, 1}, {0, -1}, {1, 0}, {-1, 0}  // вверх, вниз, вправо, влево
+    };
+
+    for (const auto& [dx, dy] : directions) {
+        Position current = position;
+        while (true) {
+            current = current + Position(dx, dy);
+            if (!board->isPositionValid(current)) break;
+            
+            const Square* targetSquare = board->getSquare(current);
+            if (!targetSquare->isOccupied()) {
+                Board tempBoard(*board);
+                tempBoard.movePiece(position, current);
+                if (!tempBoard.isCheck(color)) {
+                    moves.push_back(current);
+                }
+            } else {
+                if (targetSquare->getPiece()->getColor() != color) {
+                    Board tempBoard(*board);
+                    tempBoard.movePiece(position, current);
+                    if (!tempBoard.isCheck(color)) {
+                        moves.push_back(current);
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    return moves;
 }
 
 std::vector<Position> Rook::getAttackedSquares(const Board* board) const {
@@ -35,11 +102,8 @@ bool Rook::canMoveTo(const Position& target, const Board* board) const {
     }
 
     const Square* targetSquare = board->getSquare(target);
-    if (targetSquare->isOccupied()) {
-        return targetSquare->getPiece()->getColor() != color;
-    }
-
-    return true;
+    return !targetSquare->isOccupied() || 
+           targetSquare->getPiece()->getColor() != color;
 }
 
 char Rook::getSymbol() const {
@@ -51,5 +115,8 @@ Piece* Rook::clone() const {
 }
 
 bool Rook::isValidRookMove(const Position& target) const {
-    return position.getX() == target.getX() || position.getY() == target.getY();
+    int dx = std::abs(target.getX() - position.getX());
+    int dy = std::abs(target.getY() - position.getY());
+    
+    return (dx == 0 && dy > 0) || (dx > 0 && dy == 0);
 }

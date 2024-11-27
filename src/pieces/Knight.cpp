@@ -9,22 +9,31 @@ Knight::Knight(Color color, Position position)
 }
 
 std::vector<Position> Knight::getPossibleMoves(const Board* board) const {
-    if (!board) {
-        return std::vector<Position>();
+    std::vector<Position> moves;
+    if (!board) return moves;
+
+    auto pinInfo = checkIfPinned(board);
+    if (pinInfo.isPinned) {
+        return moves;
     }
 
-    std::vector<Position> moves;
-    auto possibleMoves = getKnightMoves();
+    const std::vector<std::pair<int, int>> knightOffsets = {
+        {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+        {1, -2}, {1, 2}, {2, -1}, {2, 1}
+    };
 
-    for (const auto& move : possibleMoves) {
-        if (!board->isPositionValid(move)) {
-            continue;
-        }
+    for (const auto& [dx, dy] : knightOffsets) {
+        Position newPos = position + Position(dx, dy);
+        if (!board->isPositionValid(newPos)) continue;
 
-        const Square* targetSquare = board->getSquare(move);
+        const Square* targetSquare = board->getSquare(newPos);
         if (!targetSquare->isOccupied() || 
             targetSquare->getPiece()->getColor() != color) {
-            moves.push_back(move);
+            Board tempBoard(*board);
+            tempBoard.movePiece(position, newPos);
+            if (!tempBoard.isCheck(color)) {
+                moves.push_back(newPos);
+            }
         }
     }
 

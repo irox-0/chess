@@ -1,4 +1,4 @@
-add_library(chess_lib
+add_library(chess_lib STATIC
     board/Board.cpp
     board/Square.cpp
     pieces/Piece.cpp
@@ -21,7 +21,7 @@ add_library(chess_lib
 target_include_directories(chess_lib
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/..
+        #${CMAKE_CURRENT_SOURCE_DIR}/..
 )
 
 add_executable(chess_game

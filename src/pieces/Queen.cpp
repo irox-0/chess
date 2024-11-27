@@ -9,17 +9,29 @@ Queen::Queen(Color color, Position position)
 }
 
 std::vector<Position> Queen::getPossibleMoves(const Board* board) const {
-    if (!board) {
-        return std::vector<Position>();
-    }
-
     std::vector<Position> moves;
-    
+    if (!board) return moves;
+
     auto straightMoves = getStraightMoves(board);
-    moves.insert(moves.end(), straightMoves.begin(), straightMoves.end());
-    
     auto diagonalMoves = getDiagonalMoves(board);
-    moves.insert(moves.end(), diagonalMoves.begin(), diagonalMoves.end());
+    
+    auto checkMove = [board, this](const Position& move) {
+        Board tempBoard(*board);
+        tempBoard.movePiece(position, move);
+        return !tempBoard.isCheck(color);
+    };
+    
+    for (const auto& move : straightMoves) {
+        if (checkMove(move)) {
+            moves.push_back(move);
+        }
+    }
+    
+    for (const auto& move : diagonalMoves) {
+        if (checkMove(move)) {
+            moves.push_back(move);
+        }
+    }
     
     return moves;
 }
@@ -42,11 +54,8 @@ bool Queen::canMoveTo(const Position& target, const Board* board) const {
     }
 
     const Square* targetSquare = board->getSquare(target);
-    if (targetSquare->isOccupied()) {
-        return targetSquare->getPiece()->getColor() != color;
-    }
-
-    return true;
+    return !targetSquare->isOccupied() || 
+           targetSquare->getPiece()->getColor() != color;
 }
 
 char Queen::getSymbol() const {
@@ -62,6 +71,7 @@ bool Queen::isValidQueenMove(const Position& target) const {
     int dy = std::abs(target.getY() - position.getY());
     
     bool straightMove = (dx == 0 && dy > 0) || (dx > 0 && dy == 0);
+    
     bool diagonalMove = dx == dy && dx > 0;
     
     return straightMove || diagonalMove;

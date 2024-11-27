@@ -58,3 +58,7 @@ bool Position::operator!=(const Position& other) const {
 Position Position::operator+(const Position& other) const {
     return Position(x + other.x, y + other.y);
 }
+
+Position Position::operator-(const Position& other) const {
+    return Position(x - other.x, y - other.y);
+}

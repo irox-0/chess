@@ -55,4 +55,14 @@ protected:
     Position position;
     bool moved;
     int value;
+    struct PinInfo {
+        bool isPinned;
+        Position pinDirection; 
+        
+        PinInfo() : isPinned(false), pinDirection(0, 0) {}
+        PinInfo(bool pinned, const Position& dir) 
+            : isPinned(pinned), pinDirection(dir) {}
+    };
+    
+    PinInfo checkIfPinned(const Board* board) const;
 };

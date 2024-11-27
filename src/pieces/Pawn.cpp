@@ -10,14 +10,77 @@ Pawn::Pawn(Color color, Position position)
 
 std::vector<Position> Pawn::getPossibleMoves(const Board* board) const {
     std::vector<Position> moves;
+    if (!board) return moves;
+
+    int direction = (color == Color::White) ? 1 : -1;
+    auto pinInfo = checkIfPinned(board);
     
-    auto forwardMoves = getForwardMoves(board);
-    auto captureMoves = getCaptureMoves(board);
-    
-    moves.insert(moves.end(), forwardMoves.begin(), forwardMoves.end());
-    moves.insert(moves.end(), captureMoves.begin(), captureMoves.end());
-    
-    return moves;
+    if (pinInfo.isPinned) {
+        if (pinInfo.pinDirection.getX() == 0) {
+            Position oneStep(position.getX(), position.getY() + direction);
+            if (board->isPositionValid(oneStep) && !board->getSquare(oneStep)->isOccupied()) {
+                moves.push_back(oneStep);
+                
+                if (!moved && position.getY() == getStartRank()) {
+                    Position twoSteps(position.getX(), position.getY() + 2 * direction);
+                    if (board->isPositionValid(twoSteps) && !board->getSquare(twoSteps)->isOccupied()) {
+                        moves.push_back(twoSteps);
+                    }
+                }
+            }
+        }
+        else if (std::abs(pinInfo.pinDirection.getX()) == 1 && 
+                pinInfo.pinDirection.getY() / std::abs(pinInfo.pinDirection.getY()) == direction) {
+            Position capturePos(position.getX() + pinInfo.pinDirection.getX(), 
+                              position.getY() + direction);
+            if (board->isPositionValid(capturePos)) {
+                const Square* square = board->getSquare(capturePos);
+                if ((square->isOccupied() && square->getPiece()->getColor() != color) ||
+                    capturePos == board->getEnPassantPosition()) {
+                    moves.push_back(capturePos);
+                }
+            }
+        }
+        return moves;
+    }
+
+    Position oneStep(position.getX(), position.getY() + direction);
+    if (board->isPositionValid(oneStep) && !board->getSquare(oneStep)->isOccupied()) {
+        moves.push_back(oneStep);
+        
+        if (!moved && position.getY() == getStartRank()) {
+            Position twoSteps(position.getX(), position.getY() + 2 * direction);
+            if (board->isPositionValid(twoSteps) && !board->getSquare(twoSteps)->isOccupied()) {
+                moves.push_back(twoSteps);
+            }
+        }
+    }
+
+    for (int dx : {-1, 1}) {
+        Position capturePos(position.getX() + dx, position.getY() + direction);
+        if (!board->isPositionValid(capturePos)) continue;
+
+        const Square* square = board->getSquare(capturePos);
+        // Обычное взятие
+        if (square->isOccupied() && square->getPiece()->getColor() != color) {
+            moves.push_back(capturePos);
+        }
+        // Взятие на проходе
+        else if (capturePos == board->getEnPassantPosition()) {
+            moves.push_back(capturePos);
+        }
+    }
+
+    std::vector<Position> legalMoves;
+    for (const auto& move : moves) {
+        Board tempBoard(*board);
+        tempBoard.movePiece(position, move);
+        if (!tempBoard.isCheck(color)) {
+            legalMoves.push_back(move);
+        }
+    }
+
+    return legalMoves;
 }
 
 std::vector<Position> Pawn::getAttackedSquares(const Board* board) const {

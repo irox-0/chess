@@ -15,9 +15,14 @@ public:
 
 private:
     bool isValidKingMove(const Position& target) const;
+    
     std::vector<Position> getBasicMoves() const;
+    
     std::vector<Position> getCastlingMoves(const Board* board) const;
+    
     bool canCastleKingside(const Board* board) const;
+    
     bool canCastleQueenside(const Board* board) const;
+    
     bool isSquareSafe(const Position& pos, const Board* board) const;
 };
