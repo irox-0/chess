@@ -12,6 +12,7 @@ add_executable(chess_tests
     #test_king.cpp
     #test_move.cpp
     #test_game.cpp
+    test_move_generator.cpp
 )
 
 target_link_libraries(chess_tests

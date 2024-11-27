@@ -126,13 +126,14 @@ const Square* Board::getSquare(int x, int y) const {
 }
 
 bool Board::placePiece(Piece* piece, const Position& pos) {
-    if (!piece || !isPositionValid(pos)) {
-        return false;
-    }
+    if (!piece || !isPositionValid(pos)) return false;
+    
     Square* square = getSquare(pos);
-    if (square->isOccupied()) {
-        return false;
-    }
+    if (!square || square->isOccupied()) return false;
+    
+    bool wasMoved = piece->hasMoved(); 
+    piece->setPosition(pos);
+    piece->setMoved(wasMoved); 
     square->setPiece(piece);
     return true;
 }
@@ -157,6 +158,7 @@ bool Board::movePiece(const Position& from, const Position& to) {
     }
     
     Piece* piece = fromSquare->getPiece();
+    piece->setMoved(true);
     
     if (piece->getType() == Piece::Type::Pawn) {
         int deltaY = std::abs(to.getY() - from.getY());

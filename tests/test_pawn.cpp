@@ -1,4 +1,3 @@
-// tests/test_pawn.cpp
 #include <gtest/gtest.h>
 #include "board/Board.hpp"
 #include "pieces/Pawn.hpp"
