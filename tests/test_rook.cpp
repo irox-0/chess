@@ -1,6 +1,9 @@
 #include <gtest/gtest.h>
 #include "pieces/Rook.hpp"
 #include "board/Board.hpp"
+#include "pieces/King.hpp"
+#include "pieces/Queen.hpp"
+#include "pieces/Bishop.hpp"
 
 class RookTest : public ::testing::Test {
 protected:
@@ -78,4 +81,57 @@ TEST_F(RookTest, AttackedSquares) {
     auto possibleMoves = rook.getPossibleMoves(board);
     
     EXPECT_EQ(attackedSquares.size(), possibleMoves.size());
+}
+TEST_F(RookTest, DiagonallyPinnedMoves) {
+    board->placePiece(new King(Piece::Color::White), Position("e1"));
+    Rook* rook = new Rook(Piece::Color::White);
+    board->placePiece(rook, Position("d2"));
+    board->placePiece(new Queen(Piece::Color::Black), Position("c3"));
+    
+    auto moves = rook->getPossibleMoves(board);
+    EXPECT_TRUE(moves.empty()) 
+        << "Rook pinned diagonally should not have any legal moves";
+}
+
+TEST_F(RookTest, MovesUnderCheckValidation) {
+    board->placePiece(new King(Piece::Color::White), Position("e1"));
+    Rook* rook = new Rook(Piece::Color::White);
+    board->placePiece(rook, Position("e2"));
+    board->placePiece(new Rook(Piece::Color::Black), Position("e8"));
+    
+    auto moves = rook->getPossibleMoves(board);
+    for (const auto& move : moves) {
+        EXPECT_EQ(move.getX(), 4) // 'e' file
+            << "Rook cannot move away from protecting the king";
+    }
+}
+
+TEST_F(RookTest, CaptureToSaveKing) {
+    board->placePiece(new King(Piece::Color::White), Position("e1"));
+    Rook* rook = new Rook(Piece::Color::White);
+    board->placePiece(rook, Position("a1"));
+    board->placePiece(new Queen(Piece::Color::Black), Position("e3"));
+    
+    auto moves = rook->getPossibleMoves(board);
+    bool canCaptureQueen = false;
+    for (const auto& move : moves) {
+        if (move == Position("e3")) canCaptureQueen = true;
+    }
+    EXPECT_TRUE(canCaptureQueen) 
+        << "Rook should be able to capture the piece threatening the king";
+}
+
+TEST_F(RookTest, LegalMovesValidation) {
+    board->placePiece(new King(Piece::Color::White), Position("e1"));
+    Rook* rook = new Rook(Piece::Color::White);
+    board->placePiece(rook, Position("a1"));
+    board->placePiece(new Bishop(Piece::Color::Black), Position("c3"));
+    
+    auto moves = rook->getPossibleMoves(board);
+    for (const auto& move : moves) {
+        Board tempBoard(*board);
+        tempBoard.movePiece(rook->getPosition(), move);
+        EXPECT_FALSE(tempBoard.isCheck(Piece::Color::White))
+            << "Rook move should not result in check to own king";
+    }
 }

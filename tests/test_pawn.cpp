@@ -139,3 +139,62 @@ TEST_F(PawnTest, PawnPromotion) {
     board->movePiece(Position(4, 6), Position(4, 7));
     EXPECT_TRUE(whitePawn->canBePromoted());
 }
+
+// Заменим существующие тесты на тесты с уникальными именами
+TEST_F(PawnTest, FirstMoveBlockedByPiece) {
+    // Проверяем, что пешка не может сделать ход на два поля, если первое поле занято
+    Pawn* whitePawn = new Pawn(Piece::Color::White, Position(4, 1));
+    board->placePiece(whitePawn, Position(4, 1));
+    
+    Pawn* blockingPawn = new Pawn(Piece::Color::Black, Position(4, 2));
+    board->placePiece(blockingPawn, Position(4, 2));
+
+    auto moves = whitePawn->getPossibleMoves(board);
+    EXPECT_EQ(moves.size(), 0);
+    
+    // Проверяем то же самое для черной пешки
+    Pawn* blackPawn = new Pawn(Piece::Color::Black, Position(4, 6));
+    board->placePiece(blackPawn, Position(4, 6));
+    
+    Pawn* blockingPawn2 = new Pawn(Piece::Color::White, Position(4, 5));
+    board->placePiece(blockingPawn2, Position(4, 5));
+
+    moves = blackPawn->getPossibleMoves(board);
+    EXPECT_EQ(moves.size(), 0);
+}
+
+TEST_F(PawnTest, DiagonalMovesValidation) {
+    // Проверяем, что пешка может ходить по диагонали только для взятия
+    Pawn* whitePawn = new Pawn(Piece::Color::White, Position(4, 4));
+    board->placePiece(whitePawn, Position(4, 4));
+
+    auto moves = whitePawn->getPossibleMoves(board);
+    for (const auto& move : moves) {
+        EXPECT_FALSE(move == Position(3, 5) || move == Position(5, 5)) 
+            << "Pawn shouldn't be able to move diagonally without capture";
+    }
+}
+
+TEST_F(PawnTest, EnPassantTimingValidation) {
+    // Проверяем, что взятие на проходе невозможно, если был сделан другой ход
+    Pawn* whitePawn = new Pawn(Piece::Color::White, Position(4, 4));
+    board->placePiece(whitePawn, Position(4, 4));
+    
+    Pawn* blackPawn = new Pawn(Piece::Color::Black, Position(5, 6));
+    board->placePiece(blackPawn, Position(5, 6));
+
+    // Делаем ход пешкой на два поля
+    board->movePiece(Position(5, 6), Position(5, 4));
+    
+    // Делаем другой ход
+    Pawn* otherPawn = new Pawn(Piece::Color::White, Position(1, 1));
+    board->placePiece(otherPawn, Position(1, 1));
+    board->movePiece(Position(1, 1), Position(1, 2));
+
+    auto moves = whitePawn->getPossibleMoves(board);
+    bool hasEnPassant = false;
+    for (const auto& move : moves) {
+        if (move == Position(5, 5)) hasEnPassant = true;
+    }
+    EXPECT_FALSE(hasEnPassant) << "En passant should not be possible after other move";
+}
