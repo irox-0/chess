@@ -101,7 +101,7 @@ TEST_F(RookTest, MovesUnderCheckValidation) {
     
     auto moves = rook->getPossibleMoves(board);
     for (const auto& move : moves) {
-        EXPECT_EQ(move.getX(), 4) // 'e' file
+        EXPECT_EQ(move.getX(), 4) 
             << "Rook cannot move away from protecting the king";
     }
 }
@@ -109,10 +109,11 @@ TEST_F(RookTest, MovesUnderCheckValidation) {
 TEST_F(RookTest, CaptureToSaveKing) {
     board->placePiece(new King(Piece::Color::White), Position("e1"));
     Rook* rook = new Rook(Piece::Color::White);
-    board->placePiece(rook, Position("a1"));
+    board->placePiece(rook, Position("a3"));
     board->placePiece(new Queen(Piece::Color::Black), Position("e3"));
     
     auto moves = rook->getPossibleMoves(board);
+
     bool canCaptureQueen = false;
     for (const auto& move : moves) {
         if (move == Position("e3")) canCaptureQueen = true;

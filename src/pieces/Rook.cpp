@@ -15,8 +15,11 @@ std::vector<Position> Rook::getPossibleMoves(const Board* board) const {
     auto pinInfo = checkIfPinned(board);
     
     if (pinInfo.isPinned) {
-        Position current = position;
+        if (std::abs(pinInfo.pinDirection.getX()) == std::abs(pinInfo.pinDirection.getY())) {
+            return moves; 
+        }
         
+        Position current = position;
         while (true) {
             current = current + pinInfo.pinDirection;
             if (!board->isPositionValid(current)) break;
@@ -50,9 +53,10 @@ std::vector<Position> Rook::getPossibleMoves(const Board* board) const {
         
         return moves;
     }
+    
 
     const std::vector<std::pair<int, int>> directions = {
-        {0, 1}, {0, -1}, {1, 0}, {-1, 0}  // вверх, вниз, вправо, влево
+        {0, 1}, {0, -1}, {1, 0}, {-1, 0}  
     };
 
     for (const auto& [dx, dy] : directions) {
