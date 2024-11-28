@@ -42,13 +42,13 @@ public:
     Position getEnPassantPosition() const { return enPassantPosition; }
     void setEnPassantPosition(const Position& pos) { enPassantPosition = pos; }
     void clearEnPassantPosition() { enPassantPosition = Position(-1, -1); }
-
+    void setupFromFEN(const std::string& fen);
+    
 private:
     std::vector<std::vector<Square>> squares;
     Position enPassantPosition;
 
     void setupEmptyBoard();
-    void setupFromFEN(const std::string& fen);
 
     bool isSquareAttackedByPawn(const Position& pos, Piece::Color attackerColor) const;
     bool isSquareAttackedByKnight(const Position& pos, Piece::Color attackerColor) const;

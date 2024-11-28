@@ -15,8 +15,8 @@ add_executable(chess_tests
     #test_game.cpp
     #test_move_generator.cpp
     #test_pieces.cpp
-    test_complex_cases.cpp
-    #test_game_state.cpp
+    #test_complex_cases.cpp
+    test_game_state.cpp
 )
 
 target_link_libraries(chess_tests

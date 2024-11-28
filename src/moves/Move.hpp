@@ -12,6 +12,7 @@ public:
         Promotion,     
         DoublePawn     
     };
+    Move();
 
     Move(const Position& from, const Position& to);
     Move(const Position& from, const Position& to, Type type);

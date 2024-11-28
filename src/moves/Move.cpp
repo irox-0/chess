@@ -1,6 +1,15 @@
 #include "Move.hpp"
 #include <sstream>
 
+Move::Move()
+    :from(Position())
+    , to(Position())
+    , type(Type::Normal)
+    , promotionPiece(Piece::Type::Pawn)
+
+{
+}
+
 Move::Move(const Position& from, const Position& to)
     : from(from)
     , to(to)
