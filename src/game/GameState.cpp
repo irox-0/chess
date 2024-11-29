@@ -19,23 +19,6 @@ bool GameState::makeMove(const Move& move, Board* board) {
         return false;
     }
 
-    if (move.getType() == Move::Type::Castling) {
-        const Square* fromSquare = board->getSquare(move.getFrom());
-        if (!fromSquare || !fromSquare->isOccupied() || 
-            fromSquare->getPiece()->getType() != Piece::Type::King ||
-            fromSquare->getPiece()->hasMoved()) {
-            return false;
-        }
-
-        Position rookPos(move.getTo().getX() == 6 ? 7 : 0, move.getFrom().getY());
-        const Square* rookSquare = board->getSquare(rookPos);
-        if (!rookSquare || !rookSquare->isOccupied() ||
-            rookSquare->getPiece()->getType() != Piece::Type::Rook ||
-            rookSquare->getPiece()->hasMoved()) {
-            return false;
-        }
-    }
-
     updatePositionHistory(board);
     
     if (!board->movePiece(move.getFrom(), move.getTo())) {
@@ -46,6 +29,7 @@ bool GameState::makeMove(const Move& move, Board* board) {
         moveCount++;
     }
     
+    // Обновляем счетчик полуходов
     if (move.getType() == Move::Type::Capture || 
         move.getType() == Move::Type::EnPassant ||
         board->getSquare(move.getTo())->getPiece()->getType() == Piece::Type::Pawn) {
@@ -56,10 +40,11 @@ bool GameState::makeMove(const Move& move, Board* board) {
     
     moveHistory.push_back(move);
     
+    // Сначала обновляем состояние игры
     updateGameState(board);
     
+    // Затем переключаем ход и очищаем предложение ничьей
     switchTurn();
-    
     clearDrawOffer();
     
     return true;
@@ -99,24 +84,40 @@ bool GameState::isMoveLegal(const Move& move, const Board* board) const {
     }
     
     if (move.getType() == Move::Type::Castling) {
+        // Проверяем базовые условия для рокировки
         const Piece* king = fromSquare->getPiece();
         if (king->getType() != Piece::Type::King || king->hasMoved()) {
             return false;
         }
-        if (board->isCheck(currentTurn)) {
+        
+        // Проверяем наличие ладьи
+        int rookFile = (move.getTo().getX() == 6) ? 7 : 0;
+        Position rookPos(rookFile, move.getFrom().getY());
+        const Square* rookSquare = board->getSquare(rookPos);
+        
+        if (!rookSquare || !rookSquare->isOccupied() ||
+            rookSquare->getPiece()->getType() != Piece::Type::Rook ||
+            rookSquare->getPiece()->hasMoved()) {
             return false;
         }
         
-        // Проверяем путь рокировки
+        // Проверяем наличие шаха
+        if (board->isCheck(currentTurn)) {
+            return false;
+        }
+
+        // Проверяем путь между королем и ладьей
         int step = (move.getTo().getX() > move.getFrom().getX()) ? 1 : -1;
-        for (int x = move.getFrom().getX() + step; x != move.getTo().getX(); x += step) {
+        for (int x = move.getFrom().getX() + step; 
+             x != rookFile; x += step) {
             Position pos(x, move.getFrom().getY());
             if (board->getSquare(pos)->isOccupied() || 
                 board->isPositionAttacked(pos, currentTurn == Piece::Color::White ? 
-                                        Piece::Color::Black : Piece::Color::White)) {
+                                      Piece::Color::Black : Piece::Color::White)) {
                 return false;
             }
         }
+        return true;
     }
     
     return MoveGenerator::isMoveLegal(board, move);
@@ -309,6 +310,12 @@ void GameState::switchTurn() {
 void GameState::updateGameState(Board* board) {
     if (!board) return;
     
+    // Сначала проверяем правило 50 ходов, так как оно имеет приоритет
+    if (isFiftyMoveRule()) {
+        setResult(Result::Draw, DrawReason::FiftyMoveRule);
+        return;
+    }
+    
     if (isCheckmate(board)) {
         setResult(currentTurn == Piece::Color::White ? 
                  Result::BlackWin : Result::WhiteWin);
@@ -327,11 +334,6 @@ void GameState::updateGameState(Board* board) {
     
     if (isThreefoldRepetition()) {
         setResult(Result::Draw, DrawReason::ThreefoldRepetition);
-        return;
-    }
-    
-    if (isFiftyMoveRule()) {
-        setResult(Result::Draw, DrawReason::FiftyMoveRule);
         return;
     }
 }

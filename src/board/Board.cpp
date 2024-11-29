@@ -159,16 +159,45 @@ bool Board::movePiece(const Position& from, const Position& to) {
     }
     
     Piece* piece = fromSquare->getPiece();
+    
+    // Обработка рокировки
+    if (piece->getType() == Piece::Type::King && std::abs(to.getX() - from.getX()) == 2) {
+        // Определяем позиции ладьи
+        int rookFromX = (to.getX() > from.getX()) ? 7 : 0;
+        int rookToX = (to.getX() > from.getX()) ? 5 : 3;
+        Position rookFrom(rookFromX, from.getY());
+        Position rookTo(rookToX, from.getY());
+        
+        Square* rookFromSquare = getSquare(rookFrom);
+        Square* rookToSquare = getSquare(rookTo);
+        
+        if (!rookFromSquare->isOccupied() || 
+            rookFromSquare->getPiece()->getType() != Piece::Type::Rook) {
+            return false;
+        }
+        
+        // Перемещаем короля
+        piece->setMoved(true);
+        fromSquare->removePiece();
+        toSquare->setPiece(piece);
+        
+        // Перемещаем ладью
+        Piece* rook = rookFromSquare->removePiece();
+        rook->setMoved(true);
+        rookToSquare->setPiece(rook);
+        
+        return true;
+    }
+    
+    // Обычный ход
     piece->setMoved(true);
     
     if (piece->getType() == Piece::Type::Pawn) {
-        int deltaY = std::abs(to.getY() - from.getY());
-        if (deltaY == 2) {
+        if (std::abs(to.getY() - from.getY()) == 2) {
             int direction = piece->getColor() == Piece::Color::White ? -1 : 1;
             setEnPassantPosition(Position(to.getX(), to.getY() + direction));
         } else {
             clearEnPassantPosition();
-            
             if (std::abs(to.getX() - from.getX()) == 1 && !toSquare->isOccupied()) {
                 Position capturedPawnPos(to.getX(), from.getY());
                 removePiece(capturedPawnPos);
