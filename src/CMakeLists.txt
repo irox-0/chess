@@ -14,8 +14,8 @@ add_library(chess_lib STATIC
     game/Game.cpp
     game/GameState.cpp
     io/Console.cpp
-    io/NotationParser.cpp
     utils/GameLogger.cpp
+    ai/AI.cpp
 )
 
 target_include_directories(chess_lib

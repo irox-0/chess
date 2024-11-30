@@ -5,6 +5,13 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+file(GLOB_RECURSE CHESS_SOURCES 
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
+)
+
+add_executable(chess ${CHESS_SOURCES})
+target_include_directories(chess PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+
 enable_testing()
 
 include(FetchContent)

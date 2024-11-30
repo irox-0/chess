@@ -111,7 +111,6 @@ TEST_F(ComplexCasesTest, CastlingThroughCheckAndPin) {
     for (const auto& move : kingMoves) {
         if (move.getType() == Move::Type::Castling) {
             Board tempBoard(*board);
-            // Проверяем промежуточную позицию при рокировке
             Position intermediate(move.getFrom().getX() + 
                                (move.getTo().getX() - move.getFrom().getX()) / 2,
                                move.getFrom().getY());
