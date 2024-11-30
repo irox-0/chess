@@ -129,6 +129,7 @@ void Console::displayGameStatus() const {
 }
 
 bool Console::getMove(std::string& from, std::string& to) {
+    
     std::string input = getStringInput("Enter move (e.g., 'e2e4' or 'e2 e4' or 'h7 h8q' for promotion): ");
     std::istringstream iss(input);
     std::string command;
@@ -137,22 +138,55 @@ bool Console::getMove(std::string& from, std::string& to) {
     clearScreen();
 
     if (command == "quit") {
-        isRunning = false;
+        if (getYesNoInput("Are you sure you want to quit? (y/n): ")) {
+            isRunning = false;
+            std::cout << "\nGame ended by player.\n";
+            std::cout << "Press Enter to exit...";
+            std::string dummy;
+            std::getline(std::cin, dummy);
+            exit(0);
+        }
+        displayBoard();
+        displayGameStatus();
         return false;
-    } else if (command == "help") {
+    } 
+    else if (command == "help") {
         showHelp();
+        displayBoard();
+        displayGameStatus();
         return false;
-    } else if (command == "resign") {
+    } 
+    else if (command == "resign") {
         handleResignation();
+        if (game->isGameOver()) {
+            handleGameOver();
+        } else {
+            displayBoard();
+            displayGameStatus();
+        }
         return false;
-    } else if (command == "draw") {
+    } 
+    else if (command == "draw") {
         handleDraw();
+        if (game->isGameOver()) {
+            handleGameOver();
+        } else {
+            displayBoard();
+            displayGameStatus();
+        }
         return false;
-    } else if (command == "show") {
+    } 
+    else if (command == "show") {
         std::string subCommand, pos;
         iss >> subCommand >> pos;
         if (subCommand == "moves" && isValidPosition(pos)) {
             displayLegalMoves(pos);
+            std::cout << "\nPress Enter to continue...";
+            std::string dummy;
+            std::getline(std::cin, dummy);
+            //clearScreen();
+            displayBoard();
+            displayGameStatus();
         }
         return false;
     }
@@ -161,9 +195,13 @@ bool Console::getMove(std::string& from, std::string& to) {
         from = command.substr(0, 2);
         if (command.length() == 4) {
             to = command.substr(2, 2);
-        } else if (command.length() == 5) {
-            to = command.substr(2, 3); 
-        } else {
+        } 
+        else if (command.length() == 5) {
+            to = command.substr(2, 3);
+        } 
+        else {
+            displayBoard();
+            displayGameStatus();
             return false;
         }
         return isValidMoveInput(from) && isValidMoveInput(to.substr(0, 2));
@@ -177,12 +215,21 @@ bool Console::getMove(std::string& from, std::string& to) {
     if (iss >> promotion) {
         if (promotion.length() == 1 && isPromotionPiece(promotion[0])) {
             to += promotion;
-        } else {
+        } 
+        else {
+            displayBoard();
+            displayGameStatus();
             return false;
         }
     }
     
-    return isValidMoveInput(from) && isValidMoveInput(to.substr(0, 2));
+    if (!isValidMoveInput(from) || !isValidMoveInput(to.substr(0, 2))) {
+        displayBoard();
+        displayGameStatus();
+        return false;
+    }
+    
+    return true;
 }
 
 void Console::handlePromotion(const std::string& from, std::string& to) {
@@ -358,7 +405,7 @@ void Console::displayLegalMoves(const std::string& position) const {
         }
         std::cout << "\n";
     }
-    getStringInput("Press Enter to continue...");
+    //getStringInput("Press Enter to continue...");
 }
 
 std::string Console::formatMove(const std::string& from, const std::string& to) const {

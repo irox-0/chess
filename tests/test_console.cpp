@@ -5,7 +5,8 @@
 class ConsoleTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        console = new Console();
+        Game game;
+        console = new Console(&game);
         originalCin = std::cin.rdbuf();
         originalCout = std::cout.rdbuf();
     }
