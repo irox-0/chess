@@ -310,7 +310,6 @@ TEST_F(GameStateTest, CastlingMove) {
 TEST_F(GameStateTest, QueensideCastlingMove) {
     board->clear();
     
-    // Размещаем короля и ладью для длинной рокировки
     King* king = new King(Piece::Color::White);
     Rook* rook = new Rook(Piece::Color::White);
     
@@ -320,25 +319,21 @@ TEST_F(GameStateTest, QueensideCastlingMove) {
     EXPECT_TRUE(board->placePiece(king, Position("e1")));
     EXPECT_TRUE(board->placePiece(rook, Position("a1")));
     
-    // Проверяем начальные позиции
     EXPECT_TRUE(board->getSquare(Position("e1"))->isOccupied());
     EXPECT_TRUE(board->getSquare(Position("a1"))->isOccupied());
     EXPECT_FALSE(board->getSquare(Position("d1"))->isOccupied());
     EXPECT_FALSE(board->getSquare(Position("c1"))->isOccupied());
     EXPECT_FALSE(board->getSquare(Position("b1"))->isOccupied());
     
-    // Выполняем длинную рокировку
     Move castling(Position("e1"), Position("c1"), Move::Type::Castling);
     EXPECT_TRUE(gameState->makeMove(castling, board)) 
         << "Queenside castling move failed";
         
-    // Проверяем, что исходные позиции пусты
     EXPECT_FALSE(board->getSquare(Position("e1"))->isOccupied()) 
         << "e1 should be empty after castling";
     EXPECT_FALSE(board->getSquare(Position("a1"))->isOccupied()) 
         << "a1 should be empty after castling";
     
-    // Проверяем, что король и ладья находятся на правильных позициях
     EXPECT_TRUE(board->getSquare(Position("c1"))->isOccupied() && 
                 board->getSquare(Position("c1"))->getPiece()->getType() == Piece::Type::King) 
         << "King should be on c1";
@@ -346,7 +341,6 @@ TEST_F(GameStateTest, QueensideCastlingMove) {
                 board->getSquare(Position("d1"))->getPiece()->getType() == Piece::Type::Rook) 
         << "Rook should be on d1";
         
-    // Проверяем, что фигуры отмечены как сделавшие ход
     EXPECT_TRUE(board->getSquare(Position("c1"))->getPiece()->hasMoved())
         << "King should be marked as moved";
     EXPECT_TRUE(board->getSquare(Position("d1"))->getPiece()->hasMoved())

@@ -322,6 +322,8 @@ TEST_F(GameTest, InsufficientMaterial) {
     board->placePiece(new King(Piece::Color::Black), Position("e8"));
     board->placePiece(new Bishop(Piece::Color::White), Position("c1"));
     
+    EXPECT_TRUE(game->makeMove("c1", "d2"));
+    
     EXPECT_TRUE(game->getGameState()->isInsufficientMaterial(board));
     EXPECT_EQ(game->getResult(), GameState::Result::Draw);
 }
@@ -376,7 +378,7 @@ TEST_F(GameTest, PromotionVariants) {
     
     board->placePiece(new Pawn(Piece::Color::White), Position("e7"));
     board->placePiece(new King(Piece::Color::White), Position("e1"));
-    board->placePiece(new King(Piece::Color::Black), Position("e8"));
+    board->placePiece(new King(Piece::Color::Black), Position("a8"));
     
     EXPECT_TRUE(game->makeMove("e7", "e8q")); 
     game->undoLastMove();

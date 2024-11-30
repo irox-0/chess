@@ -19,6 +19,10 @@ void Game::reset() {
     board->clear();
     board->initialize();
     gameState->reset();
+    
+    if (gameState->isInsufficientMaterial(board)) {
+        gameState->setResult(GameState::Result::Draw, GameState::DrawReason::InsufficientMaterial);
+    }
 }
 
 bool Game::makeMove(const std::string& from, const std::string& to) {
@@ -79,7 +83,16 @@ bool Game::makeMove(const std::string& from, const std::string& to) {
         move.setType(Move::Type::Castling);
     }
 
-    return gameState->makeMove(move, board);
+    bool moveResult = gameState->makeMove(move, board);
+    if (!moveResult) {
+        return false;
+    }
+
+    if (gameState->isInsufficientMaterial(board)) {
+        gameState->setResult(GameState::Result::Draw, GameState::DrawReason::InsufficientMaterial);
+    }
+
+    return true;
 }
 
 void Game::undoLastMove() {

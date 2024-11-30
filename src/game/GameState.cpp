@@ -346,6 +346,11 @@ void GameState::switchTurn() {
 void GameState::updateGameState(Board* board) {
     if (!board) return;
 
+    if (isInsufficientMaterial(board)) {
+        setResult(Result::Draw, DrawReason::InsufficientMaterial);
+        return;
+    }
+
     if (isFiftyMoveRule()) {
         setResult(Result::Draw, DrawReason::FiftyMoveRule);
         return;
@@ -359,11 +364,6 @@ void GameState::updateGameState(Board* board) {
     
     if (board->isStalemate(currentTurn)) {
         setResult(Result::Draw, DrawReason::Stalemate);
-        return;
-    }
-    
-    if (isInsufficientMaterial(board)) {
-        setResult(Result::Draw, DrawReason::InsufficientMaterial);
         return;
     }
     
