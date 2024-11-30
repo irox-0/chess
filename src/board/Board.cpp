@@ -160,9 +160,7 @@ bool Board::movePiece(const Position& from, const Position& to) {
     
     Piece* piece = fromSquare->getPiece();
     
-    // Обработка рокировки
     if (piece->getType() == Piece::Type::King && std::abs(to.getX() - from.getX()) == 2) {
-        // Определяем позиции ладьи
         int rookFromX = (to.getX() > from.getX()) ? 7 : 0;
         int rookToX = (to.getX() > from.getX()) ? 5 : 3;
         Position rookFrom(rookFromX, from.getY());
@@ -176,12 +174,10 @@ bool Board::movePiece(const Position& from, const Position& to) {
             return false;
         }
         
-        // Перемещаем короля
         piece->setMoved(true);
         fromSquare->removePiece();
         toSquare->setPiece(piece);
         
-        // Перемещаем ладью
         Piece* rook = rookFromSquare->removePiece();
         rook->setMoved(true);
         rookToSquare->setPiece(rook);
@@ -189,7 +185,6 @@ bool Board::movePiece(const Position& from, const Position& to) {
         return true;
     }
     
-    // Обычный ход
     piece->setMoved(true);
     
     if (piece->getType() == Piece::Type::Pawn) {
@@ -223,21 +218,18 @@ bool Board::isPositionValid(const Position& pos) const {
 }
 
 bool Board::isPositionAttacked(const Position& pos, Piece::Color attackerColor) const {
-    if (!isPositionValid(pos)) return false;
+    // Проверка атаки от пешек
+    int pawnDirection = (attackerColor == Piece::Color::White) ? 1 : -1;
+    Position leftPawn(pos.getX() - 1, pos.getY() - pawnDirection);
+    Position rightPawn(pos.getX() + 1, pos.getY() - pawnDirection);
 
-    {
-        int pawnDirection = (attackerColor == Piece::Color::White) ? 1 : -1;
-        Position left(pos.getX() - 1, pos.getY() - pawnDirection);
-        Position right(pos.getX() + 1, pos.getY() - pawnDirection);
-
-        for (const auto& attackPos : {left, right}) {
-            if (isPositionValid(attackPos)) {
-                const Square* square = getSquare(attackPos);
-                if (square->isOccupied() && 
-                    square->getPiece()->getType() == Piece::Type::Pawn &&
-                    square->getPiece()->getColor() == attackerColor) {
-                    return true;
-                }
+    for (const auto& pawnPos : {leftPawn, rightPawn}) {
+        if (isPositionValid(pawnPos)) {
+            const Square* square = getSquare(pawnPos);
+            if (square->isOccupied() && 
+                square->getPiece()->getType() == Piece::Type::Pawn &&
+                square->getPiece()->getColor() == attackerColor) {
+                return true;
             }
         }
     }
@@ -246,24 +238,84 @@ bool Board::isPositionAttacked(const Position& pos, Piece::Color attackerColor) 
         for (int y = 0; y < BOARD_SIZE; y++) {
             const Square* square = getSquare(x, y);
             if (!square->isOccupied()) continue;
-
+            
             const Piece* piece = square->getPiece();
             if (piece->getColor() != attackerColor) continue;
-            if (piece->getType() == Piece::Type::Pawn) continue; // Пешки уже проверены
+            if (piece->getType() == Piece::Type::Pawn) continue; 
+            if (piece->threatens(pos, this)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
-            // Проверяем возможность атаки
-            auto attacks = piece->getAttackedSquares(this);
-            if (std::find(attacks.begin(), attacks.end(), pos) != attacks.end()) {
+bool Board::isPositionDefended(const Position& pos, Piece::Color defenderColor) const {
+    int pawnDirection = (defenderColor == Piece::Color::White) ? -1 : 1;
+    Position leftPawn(pos.getX() - 1, pos.getY() + pawnDirection);
+    Position rightPawn(pos.getX() + 1, pos.getY() + pawnDirection);
+
+    for (const auto& pawnPos : {leftPawn, rightPawn}) {
+        if (isPositionValid(pawnPos)) {
+            const Square* square = getSquare(pawnPos);
+            if (square->isOccupied() && 
+                square->getPiece()->getColor() == defenderColor &&
+                square->getPiece()->getType() == Piece::Type::Pawn) {
                 return true;
             }
         }
     }
 
-    return false;
-}
+    const std::vector<std::pair<int, int>> knightMoves = {
+        {-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+        {1, -2}, {1, 2}, {2, -1}, {2, 1}
+    };
 
-bool Board::isPositionDefended(const Position& pos, Piece::Color defenderColor) const {
-    return isPositionAttacked(pos, defenderColor);
+    for (const auto& [dx, dy] : knightMoves) {
+        Position knightPos = pos + Position(dx, dy);
+        if (isPositionValid(knightPos)) {
+            const Square* square = getSquare(knightPos);
+            if (square->isOccupied() && 
+                square->getPiece()->getColor() == defenderColor &&
+                square->getPiece()->getType() == Piece::Type::Knight) {
+                return true;
+            }
+        }
+    }
+
+    const std::vector<std::pair<int, int>> directions = {
+        {0, 1}, {0, -1}, {1, 0}, {-1, 0},  
+        {1, 1}, {1, -1}, {-1, 1}, {-1, -1} 
+    };
+
+    for (const auto& [dx, dy] : directions) {
+        Position current = pos;
+        while (true) {
+            current = current + Position(dx, dy);
+            if (!isPositionValid(current)) break;
+
+            const Square* square = getSquare(current);
+            if (square->isOccupied()) {
+                Piece* piece = square->getPiece();
+                if (piece->getColor() != defenderColor) break;
+
+                bool isDiagonal = std::abs(dx) == std::abs(dy);
+                bool isStraight = dx == 0 || dy == 0;
+
+                if ((isDiagonal && (piece->getType() == Piece::Type::Bishop || 
+                                  piece->getType() == Piece::Type::Queen)) ||
+                    (isStraight && (piece->getType() == Piece::Type::Rook || 
+                                  piece->getType() == Piece::Type::Queen)) ||
+                    (std::abs(dx) <= 1 && std::abs(dy) <= 1 && 
+                     piece->getType() == Piece::Type::King)) {
+                    return true;
+                }
+                break;
+            }
+        }
+    }
+
+    return false;
 }
 
 bool Board::isCheck(Piece::Color color) const {
@@ -355,15 +407,46 @@ bool Board::isCheck(Piece::Color color) const {
 }
 
 bool Board::isCheckmate(Piece::Color color) const {
-    if (!isCheck(color)) return false;
+    if (!isCheck(color)) {
+        return false;
+    }
+
+    Position kingPos;
+    bool kingFound = false;
     
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        for (int j = 0; j < BOARD_SIZE; ++j) {
+            const Square* square = getSquare(i, j);
+            if (square->isOccupied() && 
+                square->getPiece()->getType() == Piece::Type::King &&
+                square->getPiece()->getColor() == color) {
+                kingPos = Position(i, j);
+                kingFound = true;
+                break;
+            }
+        }
+        if (kingFound) break;
+    }
+    
+    if (!kingFound) return false;
+
+    Piece* king = getSquare(kingPos)->getPiece();
+    auto kingMoves = king->getPossibleMoves(this);
+    if (!kingMoves.empty()) {
+        return false;
+    }
+
     auto pieces = getPieces(color);
     for (Piece* piece : pieces) {
+        if (piece->getType() == Piece::Type::King) continue;  
+
         auto moves = piece->getPossibleMoves(this);
         for (const Position& move : moves) {
             Board tempBoard(*this);
-            if (tempBoard.movePiece(piece->getPosition(), move) && !tempBoard.isCheck(color)) {
-                return false;
+            if (tempBoard.movePiece(piece->getPosition(), move)) {
+                if (!tempBoard.isCheck(color)) {
+                    return false;
+                }
             }
         }
     }

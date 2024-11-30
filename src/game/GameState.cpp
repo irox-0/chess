@@ -1,5 +1,9 @@
 #include "GameState.hpp"
 #include "moves/MoveGenerator.hpp"
+#include "pieces/Bishop.hpp"
+#include "pieces/Knight.hpp"
+#include "pieces/Queen.hpp"
+#include "pieces/Rook.hpp"
 #include <algorithm>
 #include <sstream>
 
@@ -19,17 +23,46 @@ bool GameState::makeMove(const Move& move, Board* board) {
         return false;
     }
 
-    updatePositionHistory(board);
-    
-    if (!board->movePiece(move.getFrom(), move.getTo())) {
+    bool moveResult = board->movePiece(move.getFrom(), move.getTo());
+    if (!moveResult) {
         return false;
     }
-    
+
+    if (move.getType() == Move::Type::Promotion) {
+        Square* square = board->getSquare(move.getTo());
+        if (square->isOccupied()) {
+            Piece* oldPiece = square->removePiece();
+            Piece* newPiece = nullptr;
+            Piece::Color color = oldPiece->getColor();
+            
+            switch (move.getPromotionPiece()) {
+                case Piece::Type::Queen:
+                    newPiece = new Queen(color, move.getTo());
+                    break;
+                case Piece::Type::Rook:
+                    newPiece = new Rook(color, move.getTo());
+                    break;
+                case Piece::Type::Bishop:
+                    newPiece = new Bishop(color, move.getTo());
+                    break;
+                case Piece::Type::Knight:
+                    newPiece = new Knight(color, move.getTo());
+                    break;
+                default:
+                    delete oldPiece;
+                    return false;
+            }
+            
+            delete oldPiece;
+            square->setPiece(newPiece);
+            newPiece->setMoved(true);
+        }
+    }
+
     if (currentTurn == Piece::Color::Black) {
         moveCount++;
     }
     
-    // Обновляем счетчик полуходов
     if (move.getType() == Move::Type::Capture || 
         move.getType() == Move::Type::EnPassant ||
         board->getSquare(move.getTo())->getPiece()->getType() == Piece::Type::Pawn) {
@@ -37,16 +70,13 @@ bool GameState::makeMove(const Move& move, Board* board) {
     } else {
         halfMoveCount++;
     }
-    
+
     moveHistory.push_back(move);
-    
-    // Сначала обновляем состояние игры
-    updateGameState(board);
-    
-    // Затем переключаем ход и очищаем предложение ничьей
+    updatePositionHistory(board);
     switchTurn();
+    updateGameState(board);
     clearDrawOffer();
-    
+
     return true;
 }
 
@@ -54,6 +84,19 @@ void GameState::undoLastMove(Board* board) {
     if (moveHistory.empty() || !board) {
         return;
     }
+
+    const Move& lastMove = moveHistory.back();
+
+    Square* toSquare = board->getSquare(lastMove.getTo());
+    Square* fromSquare = board->getSquare(lastMove.getFrom());
+    
+    if (toSquare->isOccupied()) {
+        Piece* piece = toSquare->removePiece();
+        piece->setMoved(false);
+        fromSquare->setPiece(piece);
+    }
+
+    moveHistory.pop_back();
     
     if (!positionHistory.empty()) {
         positionHistory.pop_back();
@@ -63,12 +106,9 @@ void GameState::undoLastMove(Board* board) {
         moveCount--;
     }
     
-    switchTurn();
-    moveHistory.pop_back();
+    halfMoveCount = std::max(0, halfMoveCount - 1);
     
-    if (!positionHistory.empty()) {
-        board->setupFromFEN(positionHistory.back());
-    }
+    switchTurn();
     
     result = Result::None;
     drawReason = DrawReason::None;
@@ -84,13 +124,11 @@ bool GameState::isMoveLegal(const Move& move, const Board* board) const {
     }
     
     if (move.getType() == Move::Type::Castling) {
-        // Проверяем базовые условия для рокировки
         const Piece* king = fromSquare->getPiece();
         if (king->getType() != Piece::Type::King || king->hasMoved()) {
             return false;
         }
         
-        // Проверяем наличие ладьи
         int rookFile = (move.getTo().getX() == 6) ? 7 : 0;
         Position rookPos(rookFile, move.getFrom().getY());
         const Square* rookSquare = board->getSquare(rookPos);
@@ -101,12 +139,10 @@ bool GameState::isMoveLegal(const Move& move, const Board* board) const {
             return false;
         }
         
-        // Проверяем наличие шаха
         if (board->isCheck(currentTurn)) {
             return false;
         }
 
-        // Проверяем путь между королем и ладьей
         int step = (move.getTo().getX() > move.getFrom().getX()) ? 1 : -1;
         for (int x = move.getFrom().getX() + step; 
              x != rookFile; x += step) {
@@ -309,20 +345,19 @@ void GameState::switchTurn() {
 
 void GameState::updateGameState(Board* board) {
     if (!board) return;
-    
-    // Сначала проверяем правило 50 ходов, так как оно имеет приоритет
+
     if (isFiftyMoveRule()) {
         setResult(Result::Draw, DrawReason::FiftyMoveRule);
         return;
     }
     
-    if (isCheckmate(board)) {
+    if (board->isCheckmate(currentTurn)) {
         setResult(currentTurn == Piece::Color::White ? 
                  Result::BlackWin : Result::WhiteWin);
         return;
     }
     
-    if (isStalemate(board)) {
+    if (board->isStalemate(currentTurn)) {
         setResult(Result::Draw, DrawReason::Stalemate);
         return;
     }

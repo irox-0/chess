@@ -21,21 +21,35 @@ std::vector<Position> King::getPossibleMoves(const Board* board) const {
         {1, -1},  {1, 0},  {1, 1}
     };
 
+    Piece::Color opponentColor = (color == Color::White) ? Color::Black : Color::White;
+
     for (const auto& [dx, dy] : kingOffsets) {
         Position newPos = position + Position(dx, dy);
         if (!board->isPositionValid(newPos)) continue;
 
         const Square* targetSquare = board->getSquare(newPos);
-        if (!targetSquare->isOccupied() || 
-            targetSquare->getPiece()->getColor() != color) {
-            Piece::Color opponentColor = (color == Color::White) ? 
-                                       Color::Black : Color::White;
-            if (!board->isPositionAttacked(newPos, opponentColor)) {
-                moves.push_back(newPos);
+        
+        // Проверяем, атакована ли позиция противником
+        if (!board->isPositionAttacked(newPos, opponentColor)) {
+            // Если клетка пустая или на ней фигура противника
+            if (!targetSquare->isOccupied() || 
+                targetSquare->getPiece()->getColor() != color) {
+                
+                // Если на клетке фигура противника, проверяем, защищена ли она
+                if (targetSquare->isOccupied() && 
+                    targetSquare->getPiece()->getColor() == opponentColor) {
+                    // Проверяем, защищена ли фигура
+                    if (!board->isPositionDefended(newPos, opponentColor)) {
+                        moves.push_back(newPos);
+                    }
+                } else {
+                    moves.push_back(newPos);
+                }
             }
         }
     }
 
+    // Проверка возможности рокировки
     if (!moved && !board->isCheck(color)) {
         if (canCastleKingside(board)) {
             moves.push_back(Position(position.getX() + 2, position.getY()));
@@ -75,27 +89,44 @@ bool King::canMoveTo(const Position& target, const Board* board) const {
         return false;
     }
 
-    if (!moved && !board->isCheck(color)) {
-        auto castlingMoves = getCastlingMoves(board);
-        if (std::find(castlingMoves.begin(), castlingMoves.end(), target) != castlingMoves.end()) {
-            return true;
-        }
-    }
-
     int dx = std::abs(target.getX() - position.getX());
     int dy = std::abs(target.getY() - position.getY());
     
-    if (dx > 1 || dy > 1) return false;
+    if (dx > 2 || dy > 1) return false;
+    if (dx == 2 && dy != 0) return false;
     
-    const Square* targetSquare = board->getSquare(target);
-    if (targetSquare->isOccupied() && 
-        targetSquare->getPiece()->getColor() == color) {
+    if (dx == 2 && !moved && !board->isCheck(color)) {
+        int rookX = target.getX() > position.getX() ? 7 : 0;
+        Position rookPos(rookX, position.getY());
+        const Square* rookSquare = board->getSquare(rookPos);
+        
+        if (rookSquare->isOccupied() && 
+            rookSquare->getPiece()->getType() == Type::Rook &&
+            !rookSquare->getPiece()->hasMoved()) {
+            return true;
+        }
         return false;
     }
 
-    Piece::Color opponentColor = (color == Color::White) ? 
-                                Color::Black : Color::White;
-    return !board->isPositionAttacked(target, opponentColor);
+    const Square* targetSquare = board->getSquare(target);
+
+    if (targetSquare->isOccupied() && targetSquare->getPiece()->getColor() == color) {
+        return false;
+    }
+
+    Piece::Color opponentColor = (color == Color::White) ? Color::Black : Color::White;
+    
+    if (board->isPositionAttacked(target, opponentColor)) {
+        if (targetSquare->isOccupied() && targetSquare->getPiece()->getColor() == opponentColor) {
+            if (board->isPositionDefended(target, opponentColor)) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 char King::getSymbol() const {
