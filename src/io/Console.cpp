@@ -16,6 +16,7 @@ const std::string Console::HELP_TEXT = R"(
 Available commands:
 - move <from> <to>  (e.g., 'move e2 e4')
 - show moves <pos>  (e.g., 'show moves e2')
+- history          (shows game move history)
 - resign
 - draw offer
 - draw accept
@@ -27,13 +28,6 @@ Available commands:
 Console::Console(Game* gamePtr) : game(gamePtr), isRunning(true) {
     if (!game) {
         throw std::runtime_error("Game pointer cannot be null");
-    }
-}
-
-void Console::start() {
-    showMainMenu();
-    while (isRunning) {
-        playGame();
     }
 }
 
@@ -56,36 +50,6 @@ void Console::showMainMenu() {
     } else {
         showError("Invalid option");
         showMainMenu();
-    }
-}
-
-void Console::playGame() {
-    while (!game->isGameOver() && isRunning) {
-        clearScreen();
-        displayBoard();
-        displayGameStatus();
-        
-        std::string from, to;
-        if (getMove(from, to)) {
-            if (isPromotionMove(from, to)) {
-                handlePromotion(from, to);
-            }
-            
-            if (!game->makeMove(from, to)) {
-                showError("Invalid move!");
-                continue;
-            }
-            
-            moveHistory.push_back(formatMove(from, to));
-            
-            if (game->isCheck()) {
-                showMessage("Check!");
-            }
-        }
-        
-        if (game->isGameOver()) {
-            handleGameOver();
-        }
     }
 }
 
@@ -118,26 +82,34 @@ void Console::displayGameStatus() const {
     std::cout << "\nTurn: " << colorToString(game->getCurrentTurn()) << "\n";
     
     if (!moveHistory.empty()) {
-        std::cout << "Last move: " << moveHistory.back() << "\n";
+        std::cout << "Last move: "  << moveHistory.back().from << " " << moveHistory.back().to << "\n";
     }
     
     if (game->getGameState()->isDrawOffered()) {
         std::cout << "Draw offered by " 
-                 << colorToString(game->getGameState()->getDrawOfferingColor()) 
-                 << "\n";
+                << colorToString(game->getGameState()->getDrawOfferingColor()) 
+                << "\n";
     }
 }
 
 bool Console::getMove(std::string& from, std::string& to) {
     
-    std::string input = getStringInput("Enter move (e.g., 'e2e4' or 'e2 e4' or 'h7 h8q' for promotion): ");
+    std::string input = getStringInput("Enter move (e.g., 'e2e4' or 'e2 e4' or 'h7 h8q' for promotion) or help: ");
     std::istringstream iss(input);
     std::string command;
     iss >> command;
     
     clearScreen();
-
-    if (command == "quit") {
+    if (command == "history") {
+        displayMoveHistory();
+        std::cout << "\nPress Enter to continue...";
+        std::string dummy;
+        std::getline(std::cin, dummy);
+        displayBoard();
+        displayGameStatus();
+        return false;
+    }
+    else if (command == "quit") {
         if (getYesNoInput("Are you sure you want to quit? (y/n): ")) {
             isRunning = false;
             std::cout << "\nGame ended by player.\n";
@@ -409,23 +381,17 @@ void Console::displayLegalMoves(const std::string& position) const {
 }
 
 std::string Console::formatMove(const std::string& from, const std::string& to) const {
+    Position fromPos(from);
+    Position toPos(to);
+    
+    const Square* fromSquare = game->getBoard()->getSquare(fromPos);
+    const Square* toSquare = game->getBoard()->getSquare(toPos);
+    
     std::stringstream ss;
     ss << from << "-" << to;
     
-    const Square* fromSquare = game->getBoard()->getSquare(Position(from));
-    if (fromSquare && fromSquare->isOccupied()) {
-        Piece* piece = fromSquare->getPiece();
-        
-        if (piece->getType() != Piece::Type::Pawn) {
-            int index = static_cast<int>(piece->getType()) + 
-                       (piece->getColor() == Piece::Color::Black ? 6 : 0);
-            ss << " " << PIECE_SYMBOLS[index];
-        }
-        
-        const Square* toSquare = game->getBoard()->getSquare(Position(to));
-        if (toSquare && toSquare->isOccupied()) {
-            ss << " captures";
-        }
+    if (toSquare && toSquare->isOccupied()) {
+        ss << " captures";
     }
     
     return ss.str();
@@ -441,23 +407,73 @@ std::string Console::formatPosition(const Position& pos) const {
 
 void Console::displayMoveHistory() const {
     if (moveHistory.empty()) {
-        showMessage("No moves made yet.");
+        std::cout << "Move history is empty. " << std::endl;
         return;
     }
 
-    std::cout << "\nMove History:\n";
-    for (size_t i = 0; i < moveHistory.size(); ++i) {
-        if (i % 2 == 0) {
-            std::cout << (i/2 + 1) << ". ";
+    std::cout << "Move history:"<< "\n";
+    int moveNumber = 1;
+    bool isWhiteTurn = true;
+
+    for (const MoveInfo& move : moveHistory) {
+        if (isWhiteTurn) {
+            std::cout << moveNumber << ". ";
         }
-        std::cout << moveHistory[i];
-        if (i % 2 == 0) {
+
+        char notation = figureNotation(move, true);
+        char eNotation = figureNotation(move, false);
+        
+        
+        std::cout << notation << " " << move.from << "-" << move.to ;
+        
+        if (move.isCapture) {
+            if(move.pieceColor == Piece::Color::White){
+                std::cout << " CAPTURES " << eNotation << "  "; 
+            }
+            else {
+                std::cout << " camptures " << eNotation << "  ";
+
+            }
+        }
+
+        if (isWhiteTurn) {
             std::cout << " ";
         } else {
             std::cout << "\n";
+            moveNumber++;
         }
+
+        isWhiteTurn = !isWhiteTurn;
     }
-    if (moveHistory.size() % 2 != 0) {
+
+    if (!isWhiteTurn) {
         std::cout << "\n";
     }
+}
+
+void Console::addMoveToHistory(const std::string& from, const std::string& to, 
+                             Piece::Type pieceType, Piece::Color pieceColor, 
+                             bool isCapture, Piece::Type capturedType,
+                             Piece::Color capturedColor) {
+    moveHistory.emplace_back(from, to, pieceType, pieceColor, isCapture, 
+                           capturedType, capturedColor);
+}
+
+char Console::figureNotation(const MoveInfo& move, bool isAttacking) const {
+    char notation = ' ';
+    Piece::Type type = isAttacking ? move.pieceType : move.capturedPieceType;
+    Piece::Color color = isAttacking ? move.pieceColor: move.capturedPieceColor;
+    switch (type) {
+        case Piece::Type::King:   notation = 'K'; break;
+        case Piece::Type::Queen:  notation = 'Q'; break;
+        case Piece::Type::Rook:   notation = 'R'; break;
+        case Piece::Type::Bishop: notation = 'B'; break;
+        case Piece::Type::Knight: notation = 'N'; break;
+        case Piece::Type::Pawn:   notation = 'P'; break;
+         default:                  notation = '?'; break;
+    }
+    if (color == Piece::Color::Black) {
+        notation = std::tolower(notation);
+    }
+    return notation;
 }

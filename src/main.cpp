@@ -95,33 +95,71 @@ private:
         std::string from, to;
         while (true) {
             if (console.getMove(from, to)) {
-                if (game->makeMove(from, to)) {
-                    console.clearScreen();
-                    console.displayBoard();
-                    return;
+                const Square* fromSquare = game->getBoard()->getSquare(Position(from));
+                if (fromSquare && fromSquare->isOccupied()) {
+                    Piece* piece = fromSquare->getPiece();
+                    const Square* toSquare = game->getBoard()->getSquare(Position(to));
+                    bool isCapture = toSquare && toSquare->isOccupied() && 
+                            toSquare->getPiece()->getColor() != piece->getColor();
+
+                    Piece::Type capturedType = Piece::Type::Pawn;
+                    Piece::Color capturedColor = Piece::Color::White;
+                    if (isCapture && toSquare->isOccupied()) {
+                        capturedType = toSquare->getPiece()->getType();
+                        capturedColor = toSquare->getPiece()->getColor();
+                    }
+
+                    if (game->makeMove(from, to)) {
+                        console.addMoveToHistory(from, to, piece->getType(), 
+                                        piece->getColor(), isCapture,
+                                        capturedType, capturedColor);
+                        console.clearScreen();
+                        console.displayBoard();
+                        console.displayGameStatus();
+                        return;
+                    }
                 }
                 std::cout << "Invalid move! Please try again.\n";
                 console.displayBoard();
             }
         }
-    }
+    }   
+    
 
     void handleAIMove() {
         std::cout << "\nAI is thinking...\n";
-        
+    
         Move aiMove = ai->getMove(game->getBoard(), game->getCurrentTurn());
-        
+    
         if (aiMove.getFrom().isValid() && aiMove.getTo().isValid()) {
-            std::cout << "AI moves: " << aiMove.getFrom().toAlgebraic() 
-                     << " to " << aiMove.getTo().toAlgebraic() << "\n";
+            std::string from = aiMove.getFrom().toAlgebraic();
+            std::string to = aiMove.getTo().toAlgebraic();
+        
+            const Square* fromSquare = game->getBoard()->getSquare(aiMove.getFrom());
+            if (fromSquare && fromSquare->isOccupied()) {
+                Piece* piece = fromSquare->getPiece();
+                const Square* toSquare = game->getBoard()->getSquare(aiMove.getTo());
+                bool isCapture = toSquare && toSquare->isOccupied() && 
+                        toSquare->getPiece()->getColor() != piece->getColor();
+
+                Piece::Type capturedType = Piece::Type::Pawn;
+                Piece::Color capturedColor = Piece::Color::White;
+                if (isCapture && toSquare->isOccupied()) {
+                    capturedType = toSquare->getPiece()->getType();
+                    capturedColor = toSquare->getPiece()->getColor();
+                }
+
+                std::cout << "AI moves: " << from << " to " << to << "\n";
             
-            game->makeMove(
-                aiMove.getFrom().toAlgebraic(), 
-                aiMove.getTo().toAlgebraic()
-            );
-            
-            console.clearScreen();
-            console.displayBoard();
+                if (game->makeMove(from, to)) {
+                    console.addMoveToHistory(from, to, piece->getType(), 
+                                piece->getColor(), isCapture,
+                                capturedType, capturedColor);
+                    console.clearScreen();
+                    console.displayBoard();
+                    console.displayGameStatus();
+                }
+            }
         } else {
             std::cout << "AI couldn't make a move!\n";
         }
