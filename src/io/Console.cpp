@@ -17,6 +17,7 @@ Available commands:
 - move <from> <to>  (e.g., 'move e2 e4')
 - show moves <pos>  (e.g., 'show moves e2')
 - history          (shows game move history)
+- undo            (undo last move)
 - resign
 - draw offer
 - draw accept
@@ -121,7 +122,13 @@ bool Console::getMove(std::string& from, std::string& to) {
         displayBoard();
         displayGameStatus();
         return false;
-    } 
+    }
+    else if (command == "undo") {
+        handleUndo();
+        displayBoard();
+        displayGameStatus();
+        return false;
+    }
     else if (command == "help") {
         showHelp();
         displayBoard();
@@ -215,7 +222,35 @@ void Console::handlePromotion(const std::string& from, std::string& to) {
     }
 }
 
+void Console::handleUndo() {
+    if (moveHistory.empty()) {
+        showMessage("No moves to undo!");
+        return;
+    }
 
+    bool isPlayerWhite = game->getCurrentTurn() == Piece::Color::White;
+
+    if ((isPlayerWhite && moveHistory.size() >= 2) || 
+        (!isPlayerWhite && moveHistory.size() >= 2)) {
+        game->undoLastMove();  
+        game->undoLastMove();  
+        
+        if (moveHistory.size() >= 2) {
+            moveHistory.pop_back();
+            moveHistory.pop_back();
+        }
+
+    } else {
+        game->undoLastMove();
+        if (!moveHistory.empty()) {
+            moveHistory.pop_back();
+        }
+    }
+    
+    showMessage("Move(s) undone!");
+    displayBoard();
+    displayGameStatus();
+}
 char Console::getPromotionPiece() const {
     while (true) {
         std::string input = getStringInput(

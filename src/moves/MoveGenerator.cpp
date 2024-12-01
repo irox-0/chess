@@ -265,6 +265,8 @@ std::vector<Move> MoveGenerator::generateKingMoves(const Board* board, const Pos
             }
         }
     }
+    auto castlingMoves = getCastlingMoves(board, king->getColor());
+        moves.insert(moves.end(), castlingMoves.begin(), castlingMoves.end());
     
     return moves;
 }

@@ -13,7 +13,9 @@ public:
         game(std::make_unique<Game>()),
         ai(std::make_unique<AI>()),
         console(game.get()),
-        isPlayerWhite(true) {}
+        isPlayerWhite(true) 
+        {
+        }
 
     void start() {
         showWelcomeMessage();
@@ -71,6 +73,10 @@ private:
             if (isPlayerTurn) {
                 std::cout << "\nYour turn!\n";
                 handlePlayerMove();
+
+                if (game->getCurrentTurn() == Piece::Color::White && isPlayerWhite ||
+                game->getCurrentTurn() == Piece::Color::Black && !isPlayerWhite) {
+                continue; }
             } else {
                 handleAIMove();
             }

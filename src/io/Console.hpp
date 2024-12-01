@@ -24,7 +24,8 @@ public:
     char getPromotionPiece() const;
     bool getYesNoInput(const std::string& prompt) const;
     std::string getStringInput(const std::string& prompt) const;
-    
+
+
     void clearScreen() const;
     void showHelp() const;
     void showError(const std::string& message) const;
@@ -60,6 +61,7 @@ private:
 
     void handleGameOver();
     void handleDraw();
+    void handleUndo();
     void handleResignation();
     void handlePromotion(const std::string& from, std::string& to);
     

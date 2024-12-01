@@ -60,6 +60,7 @@ public:
     void reset();
 
 private:
+    std::vector<Board> boardHistory;
     Piece::Color currentTurn;         
     Result result;                     
     DrawReason drawReason;            

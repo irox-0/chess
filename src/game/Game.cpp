@@ -95,7 +95,48 @@ bool Game::makeMove(const std::string& from, const std::string& to) {
     return true;
 }
 
+bool Game::canUndo() const {
+    return !gameState->getMoveHistory().empty() && !isGameOver();
+}
+
 void Game::undoLastMove() {
+    if (!canUndo()) {
+        return;
+    }
+    
+    if (gameState->getMoveHistory().empty()) {
+        return;
+    }
+
+    const Move& lastMove = gameState->getMoveHistory().back();
+    Position from = lastMove.getFrom();
+    Position to = lastMove.getTo();
+
+    Square* toSquare = board->getSquare(to);
+    Piece* piece = nullptr;
+    if (toSquare && toSquare->isOccupied()) {
+        piece = toSquare->getPiece();
+    }
+
+    if (lastMove.getType() == Move::Type::Castling) {
+        int rank = (getCurrentTurn() == Piece::Color::White) ? 0 : 7;
+        bool isKingside = (to.getX() == 6);
+        
+        Position rookFrom(isKingside ? 5 : 3, rank);
+        Position rookTo(isKingside ? 7 : 0, rank);
+        board->movePiece(rookFrom, rookTo);
+        Square* rookSquare = board->getSquare(rookTo);
+        if (rookSquare && rookSquare->isOccupied()) {
+            rookSquare->getPiece()->setMoved(false);
+        }
+    }
+
+    board->movePiece(to, from);
+    Square* fromSquare = board->getSquare(from);
+    if (fromSquare && fromSquare->isOccupied()) {
+        fromSquare->getPiece()->setMoved(false);
+    }
+
     gameState->undoLastMove(board);
 }
 

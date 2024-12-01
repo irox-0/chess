@@ -23,9 +23,31 @@ bool GameState::makeMove(const Move& move, Board* board) {
         return false;
     }
 
+    boardHistory.push_back(*board);
+
+    const Square* fromSquare = board->getSquare(move.getFrom());
+    const Square* toSquare = board->getSquare(move.getTo());
+    
+    bool isCapture = toSquare->isOccupied();
+    Piece::Type capturedType = Piece::Type::Pawn;
+    Piece::Color capturedColor = Piece::Color::White;
+    
+    if (isCapture) {
+        capturedType = toSquare->getPiece()->getType();
+        capturedColor = toSquare->getPiece()->getColor();
+    }
+
     bool moveResult = board->movePiece(move.getFrom(), move.getTo());
     if (!moveResult) {
+        boardHistory.pop_back();
         return false;
+    }
+
+    if (move.getType() == Move::Type::EnPassant) {
+        isCapture = true;
+        capturedType = Piece::Type::Pawn;
+        capturedColor = (currentTurn == Piece::Color::White) ? 
+                       Piece::Color::Black : Piece::Color::White;
     }
 
     if (move.getType() == Move::Type::Promotion) {
@@ -33,20 +55,19 @@ bool GameState::makeMove(const Move& move, Board* board) {
         if (square->isOccupied()) {
             Piece* oldPiece = square->removePiece();
             Piece* newPiece = nullptr;
-            Piece::Color color = oldPiece->getColor();
             
             switch (move.getPromotionPiece()) {
                 case Piece::Type::Queen:
-                    newPiece = new Queen(color, move.getTo());
+                    newPiece = new Queen(currentTurn, move.getTo());
                     break;
                 case Piece::Type::Rook:
-                    newPiece = new Rook(color, move.getTo());
+                    newPiece = new Rook(currentTurn, move.getTo());
                     break;
                 case Piece::Type::Bishop:
-                    newPiece = new Bishop(color, move.getTo());
+                    newPiece = new Bishop(currentTurn, move.getTo());
                     break;
                 case Piece::Type::Knight:
-                    newPiece = new Knight(color, move.getTo());
+                    newPiece = new Knight(currentTurn, move.getTo());
                     break;
                 default:
                     delete oldPiece;
@@ -59,10 +80,12 @@ bool GameState::makeMove(const Move& move, Board* board) {
         }
     }
 
+    moveHistory.push_back(move);
+
     if (currentTurn == Piece::Color::Black) {
         moveCount++;
     }
-    
+
     if (move.getType() == Move::Type::Capture || 
         move.getType() == Move::Type::EnPassant ||
         board->getSquare(move.getTo())->getPiece()->getType() == Piece::Type::Pawn) {
@@ -71,8 +94,6 @@ bool GameState::makeMove(const Move& move, Board* board) {
         halfMoveCount++;
     }
 
-    moveHistory.push_back(move);
-    updatePositionHistory(board);
     switchTurn();
     updateGameState(board);
     clearDrawOffer();
@@ -81,32 +102,18 @@ bool GameState::makeMove(const Move& move, Board* board) {
 }
 
 void GameState::undoLastMove(Board* board) {
-    if (moveHistory.empty() || !board) {
+    if (boardHistory.empty() || !board || moveHistory.empty()) {
         return;
     }
 
-    const Move& lastMove = moveHistory.back();
-
-    Square* toSquare = board->getSquare(lastMove.getTo());
-    Square* fromSquare = board->getSquare(lastMove.getFrom());
+    *board = boardHistory.back();
+    boardHistory.pop_back();
     
-    if (toSquare->isOccupied()) {
-        Piece* piece = toSquare->removePiece();
-        piece->setMoved(false);
-        fromSquare->setPiece(piece);
-    }
-
     moveHistory.pop_back();
-    
-    if (!positionHistory.empty()) {
-        positionHistory.pop_back();
-    }
     
     if (currentTurn == Piece::Color::White) {
         moveCount--;
     }
-    
-    halfMoveCount = std::max(0, halfMoveCount - 1);
     
     switchTurn();
     

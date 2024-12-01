@@ -14,6 +14,7 @@ public:
     void reset();
     bool makeMove(const std::string& from, const std::string& to);
     void undoLastMove();
+    bool canUndo() const;
     
     void resign(Piece::Color color);
     void offerDraw(Piece::Color color);
