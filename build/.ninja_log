@@ -141,3 +141,11 @@
 2013	2409	7547807239081185	tests/chess_tests.exe	6351f8ac11dcca67
 2013	2409	7547807239081185	tests/chess_tests[1]_tests.cmake	6351f8ac11dcca67
 2013	2409	7547807239081185	D:/cpp/chess1/build/tests/chess_tests[1]_tests.cmake	6351f8ac11dcca67
+28	1510	7547809856091450	CMakeFiles/chess.dir/src/io/Console.cpp.obj	49bd8357f7a8fe6c
+23	1549	7547809856046498	src/CMakeFiles/chess_lib.dir/io/Console.cpp.obj	670b2bc8b960449c
+1511	1696	7547809870922069	chess.exe	8e4bea1dce763a15
+1550	1706	7547809871303210	src/libchess_lib.a	cdbbb04c44567edc
+1706	1874	7547809872869552	src/chess_game.exe	cca8b8d940824552
+1713	2109	7547809876821131	tests/chess_tests.exe	6351f8ac11dcca67
+1713	2109	7547809876821131	tests/chess_tests[1]_tests.cmake	6351f8ac11dcca67
+1713	2109	7547809876821131	D:/cpp/chess1/build/tests/chess_tests[1]_tests.cmake	6351f8ac11dcca67

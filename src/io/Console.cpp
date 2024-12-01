@@ -95,7 +95,7 @@ void Console::displayGameStatus() const {
 
 bool Console::getMove(std::string& from, std::string& to) {
     
-    std::string input = getStringInput("Enter move (e.g., 'e2e4' or 'e2 e4' or 'h7 h8q' for promotion) or help: ");
+    std::string input = getStringInput("Enter move (e.g., 'e2e4' or 'e2 e4' or 'h7 h8q' for promotion) or type \"help\" : ");
     std::istringstream iss(input);
     std::string command;
     iss >> command;

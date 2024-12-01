@@ -29,16 +29,12 @@ std::vector<Position> King::getPossibleMoves(const Board* board) const {
 
         const Square* targetSquare = board->getSquare(newPos);
         
-        // Проверяем, атакована ли позиция противником
         if (!board->isPositionAttacked(newPos, opponentColor)) {
-            // Если клетка пустая или на ней фигура противника
             if (!targetSquare->isOccupied() || 
                 targetSquare->getPiece()->getColor() != color) {
                 
-                // Если на клетке фигура противника, проверяем, защищена ли она
                 if (targetSquare->isOccupied() && 
                     targetSquare->getPiece()->getColor() == opponentColor) {
-                    // Проверяем, защищена ли фигура
                     if (!board->isPositionDefended(newPos, opponentColor)) {
                         moves.push_back(newPos);
                     }
@@ -49,7 +45,6 @@ std::vector<Position> King::getPossibleMoves(const Board* board) const {
         }
     }
 
-    // Проверка возможности рокировки
     if (!moved && !board->isCheck(color)) {
         if (canCastleKingside(board)) {
             moves.push_back(Position(position.getX() + 2, position.getY()));
@@ -171,7 +166,6 @@ bool King::canCastleKingside(const Board* board) const {
         return false;
     }
 
-    // Проверяем путь
     for (int x = position.getX() + 1; x < rookPos.getX(); x++) {
         Position pos(x, baseRank);
         if (board->getSquare(pos)->isOccupied()) return false;
