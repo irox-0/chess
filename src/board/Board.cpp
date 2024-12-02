@@ -270,8 +270,8 @@ bool Board::isPositionDefended(const Position& pos, Piece::Color defenderColor) 
         {1, -2}, {1, 2}, {2, -1}, {2, 1}
     };
 
-    for (const auto& [dx, dy] : knightMoves) {
-        Position knightPos = pos + Position(dx, dy);
+    for (const auto& move : knightMoves) {
+        Position knightPos = pos + Position(move.first, move.second);
         if (isPositionValid(knightPos)) {
             const Square* square = getSquare(knightPos);
             if (square->isOccupied() && 
@@ -287,10 +287,10 @@ bool Board::isPositionDefended(const Position& pos, Piece::Color defenderColor) 
         {1, 1}, {1, -1}, {-1, 1}, {-1, -1} 
     };
 
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = pos;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!isPositionValid(current)) break;
 
             const Square* square = getSquare(current);
@@ -298,14 +298,14 @@ bool Board::isPositionDefended(const Position& pos, Piece::Color defenderColor) 
                 const Piece* piece = square->getPiece();
                 if (piece->getColor() != defenderColor) break;
 
-                const bool isDiagonal = std::abs(dx) == std::abs(dy);
-                const bool isStraight = dx == 0 || dy == 0;
+                const bool isDiagonal = std::abs(move.first) == std::abs(move.second);
+                const bool isStraight = move.first == 0 || move.second == 0;
 
                 if ((isDiagonal && (piece->getType() == Piece::Type::Bishop || 
                                   piece->getType() == Piece::Type::Queen)) ||
                     (isStraight && (piece->getType() == Piece::Type::Rook || 
                                   piece->getType() == Piece::Type::Queen)) ||
-                    (std::abs(dx) <= 1 && std::abs(dy) <= 1 && 
+                    (std::abs(move.first) <= 1 && std::abs(move.second) <= 1 &&
                      piece->getType() == Piece::Type::King)) {
                     return true;
                 }
@@ -357,8 +357,8 @@ bool Board::isCheck(const Piece::Color color) const {
         {1, -2}, {1, 2}, {2, -1}, {2, 1}
     };
     
-    for (const auto& [dx, dy] : knightMoves) {
-        Position pos = kingPos + Position(dx, dy);
+    for (const auto& move : knightMoves) {
+        Position pos = kingPos + Position(move.first, move.second);
         if (isPositionValid(pos)) {
             const Square* square = getSquare(pos);
             if (square->isOccupied() && 
@@ -374,10 +374,10 @@ bool Board::isCheck(const Piece::Color color) const {
         {1, 1}, {1, -1}, {-1, 1}, {-1, -1}  
     };
 
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = kingPos;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!isPositionValid(current)) break;
             
             const Square* square = getSquare(current);
@@ -385,7 +385,7 @@ bool Board::isCheck(const Piece::Color color) const {
                 Piece* piece = square->getPiece();
                 if (piece->getColor() == enemyColor) {
                     bool canAttack = false;
-                    if (std::abs(dx) == std::abs(dy)) { 
+                    if (std::abs(move.first) == std::abs(move.second)) {
                         canAttack = (piece->getType() == Piece::Type::Bishop || 
                                    piece->getType() == Piece::Type::Queen);
                     } else { 
