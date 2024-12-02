@@ -555,10 +555,10 @@ bool Board::isSquareAttackedByBishop(const Position& pos, const Piece::Color att
         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
     };
     
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = pos;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!isPositionValid(current)) break;
             
             const Square* square = getSquare(current);
@@ -580,10 +580,10 @@ bool Board::isSquareAttackedByRook(const Position& pos, const Piece::Color attac
         {0, 1}, {0, -1}, {1, 0}, {-1, 0}
     };
     
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = pos;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!isPositionValid(current)) break;
             
             const Square* square = getSquare(current);
@@ -606,10 +606,10 @@ bool Board::isSquareAttackedByQueen(const Position& pos, const Piece::Color atta
         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
     };
     
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = pos;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!isPositionValid(current)) break;
             
             const Square* square = getSquare(current);
@@ -633,8 +633,8 @@ bool Board::isSquareAttackedByKing(const Position& pos, const Piece::Color attac
         {1, -1},  {1, 0},  {1, 1}
     };
     
-    for (const auto& [dx, dy] : directions) {
-        Position attackPos = pos + Position(dx, dy);
+    for (const auto& move : directions) {
+        Position attackPos = pos + Position(move.first, move.second);
         if (!isPositionValid(attackPos)) continue;
         
         const Square* square = getSquare(attackPos);
