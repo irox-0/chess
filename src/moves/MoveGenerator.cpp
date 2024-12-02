@@ -151,8 +151,8 @@ std::vector<Move> MoveGenerator::generateKnightMoves(const Board* board, const P
         {1, -2}, {1, 2}, {2, -1}, {2, 1}
     };
     
-    for (const auto& [dx, dy] : offsets) {
-        Position newPos(pos.getX() + dx, pos.getY() + dy);
+    for (const auto& move : offsets) {
+        Position newPos(pos.getX() + move.first, pos.getY() + move.second);
         if (!board->isPositionValid(newPos)) continue;
         
         const Square* targetSquare = board->getSquare(newPos);
@@ -176,10 +176,10 @@ std::vector<Move> MoveGenerator::generateBishopMoves(const Board* board, const P
         {-1, -1}, {-1, 1}, {1, -1}, {1, 1}
     };
     
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = pos;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!board->isPositionValid(current)) break;
             
             const Square* targetSquare = board->getSquare(current);
@@ -206,10 +206,10 @@ std::vector<Move> MoveGenerator::generateRookMoves(const Board* board, const Pos
         {0, 1}, {0, -1}, {1, 0}, {-1, 0}
     };
     
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = pos;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first,  move.second);
             if (!board->isPositionValid(current)) break;
             
             const Square* targetSquare = board->getSquare(current);
@@ -250,8 +250,8 @@ std::vector<Move> MoveGenerator::generateKingMoves(const Board* board, const Pos
         {1, -1},  {1, 0},  {1, 1}
     };
     
-    for (const auto& [dx, dy] : directions) {
-        Position newPos(pos.getX() + dx, pos.getY() + dy);
+    for (const auto& move : directions) {
+        Position newPos(pos.getX() + move.first, pos.getY() + move.second);
         if (!board->isPositionValid(newPos)) continue;
         
         const Square* targetSquare = board->getSquare(newPos);
