@@ -11,8 +11,6 @@ public:
     Console(Game* gamePtr);
     ~Console() = default;
 
-    void showMainMenu();
-    
     void displayBoard() const;
     void displayGameStatus() const;
     void displayMoveHistory() const;

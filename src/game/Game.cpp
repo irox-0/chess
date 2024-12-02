@@ -30,8 +30,8 @@ bool Game::makeMove(const std::string& from, const std::string& to) {
         return false;
     }
 
-    Position fromPos(from);
-    Position toPos(to.substr(0, 2));
+    const Position fromPos(from);
+    const Position toPos(to.substr(0, 2));
 
     if (!fromPos.isValid() || !toPos.isValid()) {
         return false;
@@ -119,11 +119,11 @@ void Game::undoLastMove() {
     }
 
     if (lastMove.getType() == Move::Type::Castling) {
-        int rank = (getCurrentTurn() == Piece::Color::White) ? 0 : 7;
-        bool isKingside = (to.getX() == 6);
+        const int rank = (getCurrentTurn() == Piece::Color::White) ? 0 : 7;
+        const bool isKingside = (to.getX() == 6);
         
-        Position rookFrom(isKingside ? 5 : 3, rank);
-        Position rookTo(isKingside ? 7 : 0, rank);
+        const Position rookFrom(isKingside ? 5 : 3, rank);
+        const Position rookTo(isKingside ? 7 : 0, rank);
         board->movePiece(rookFrom, rookTo);
         Square* rookSquare = board->getSquare(rookTo);
         if (rookSquare && rookSquare->isOccupied()) {

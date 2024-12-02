@@ -6,13 +6,13 @@ Square::Square() :
     piece(nullptr) {
 }
 
-Square::Square(Color color) : 
+Square::Square(const Color color) :
     color(color),
     position(0, 0),
     piece(nullptr) {
 }
 
-Square::Square(Color color, Position position) : 
+Square::Square(const Color color, const Position position) :
     color(color),
     position(position),
     piece(nullptr) {

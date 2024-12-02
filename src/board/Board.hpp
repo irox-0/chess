@@ -9,7 +9,7 @@ public:
     static const int BOARD_SIZE = 8;
     
     Board();
-    Board(const std::string& fen);
+    explicit Board(const std::string& fen);
     Board(const Board& other);
     Board& operator=(const Board& other);
     

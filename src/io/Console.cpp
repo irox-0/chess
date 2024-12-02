@@ -10,47 +10,20 @@ const char* Console::PIECE_SYMBOLS[] = {
 
 const char* Console::COLOR_NAMES[] = {"White", "Black"};
 
-const std::string Console::BOARD_BORDER = "+---+---+---+---+---+---+---+---+";
 const std::string Console::COLUMN_LABELS = "  a   b   c   d   e   f   g   h";
 const std::string Console::HELP_TEXT = R"(
 Available commands:
-- move <from> <to>  (e.g., 'move e2 e4')
+- move <from> <to>  (e.g., 'e2 e4' or 'e2e4')
 - show moves <pos>  (e.g., 'show moves e2')
 - history          (shows game move history)
 - undo            (undo last move)
 - resign
-- draw offer
-- draw accept
-- draw decline
-- help
 - quit
 )";
 
 Console::Console(Game* gamePtr) : game(gamePtr), isRunning(true) {
     if (!game) {
         throw std::runtime_error("Game pointer cannot be null");
-    }
-}
-
-void Console::showMainMenu() {
-    clearScreen();
-    std::cout << "Chess Game\n"
-              << "1. Start new game\n"
-              << "2. Help\n"
-              << "3. Quit\n"
-              << "Choose option: ";
-    
-    std::string input = getStringInput("");
-    if (input == "1") {
-        game->reset();
-    } else if (input == "2") {
-        showHelp();
-        showMainMenu();
-    } else if (input == "3") {
-        isRunning = false;
-    } else {
-        showError("Invalid option");
-        showMainMenu();
     }
 }
 
@@ -110,7 +83,7 @@ bool Console::getMove(std::string& from, std::string& to) {
         displayGameStatus();
         return false;
     }
-    else if (command == "quit") {
+    if (command == "quit") {
         if (getYesNoInput("Are you sure you want to quit? (y/n): ")) {
             isRunning = false;
             std::cout << "\nGame ended by player.\n";
@@ -123,19 +96,19 @@ bool Console::getMove(std::string& from, std::string& to) {
         displayGameStatus();
         return false;
     }
-    else if (command == "undo") {
+    if (command == "undo") {
         handleUndo();
         displayBoard();
         displayGameStatus();
         return false;
     }
-    else if (command == "help") {
+    if (command == "help") {
         showHelp();
         displayBoard();
         displayGameStatus();
         return false;
     } 
-    else if (command == "resign") {
+    if (command == "resign") {
         handleResignation();
         if (game->isGameOver()) {
             handleGameOver();
@@ -145,7 +118,7 @@ bool Console::getMove(std::string& from, std::string& to) {
         }
         return false;
     } 
-    else if (command == "draw") {
+    if (command == "draw") {
         handleDraw();
         if (game->isGameOver()) {
             handleGameOver();
@@ -155,7 +128,7 @@ bool Console::getMove(std::string& from, std::string& to) {
         }
         return false;
     } 
-    else if (command == "show") {
+    if (command == "show") {
         std::string subCommand, pos;
         iss >> subCommand >> pos;
         if (subCommand == "moves" && isValidPosition(pos)) {
@@ -267,7 +240,7 @@ char Console::getPromotionPiece() const {
 
 void Console::handleGameOver() {
     displayBoard();
-    GameState::Result result = game->getResult();
+    const GameState::Result result = game->getResult();
     
     std::cout << "\nGame Over! " << resultToString(result) << "\n";
     
@@ -281,7 +254,7 @@ void Console::handleGameOver() {
 
 bool Console::getYesNoInput(const std::string& prompt) const {
     while (true) {
-        std::string input = getStringInput(prompt);
+        const std::string input = getStringInput(prompt);
         if (!input.empty()) {
             char response = std::tolower(input[0]);
             if (response == 'y' || response == 'n') {
@@ -416,19 +389,10 @@ void Console::displayLegalMoves(const std::string& position) const {
 }
 
 std::string Console::formatMove(const std::string& from, const std::string& to) const {
-    Position fromPos(from);
-    Position toPos(to);
-    
-    const Square* fromSquare = game->getBoard()->getSquare(fromPos);
-    const Square* toSquare = game->getBoard()->getSquare(toPos);
-    
+
     std::stringstream ss;
     ss << from << "-" << to;
-    
-    if (toSquare && toSquare->isOccupied()) {
-        ss << " captures";
-    }
-    
+
     return ss.str();
 }
 
@@ -494,10 +458,10 @@ void Console::addMoveToHistory(const std::string& from, const std::string& to,
                            capturedType, capturedColor);
 }
 
-char Console::figureNotation(const MoveInfo& move, bool isAttacking) const {
+char Console::figureNotation(const MoveInfo& move, bool isAtacking) const {
     char notation = ' ';
-    Piece::Type type = isAttacking ? move.pieceType : move.capturedPieceType;
-    Piece::Color color = isAttacking ? move.pieceColor: move.capturedPieceColor;
+    Piece::Type type = isAtacking ? move.pieceType : move.capturedPieceType;
+    Piece::Color color = isAtacking ? move.pieceColor: move.capturedPieceColor;
     switch (type) {
         case Piece::Type::King:   notation = 'K'; break;
         case Piece::Type::Queen:  notation = 'Q'; break;

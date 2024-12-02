@@ -56,7 +56,7 @@ std::vector<Move> MoveGenerator::generateLegalMoves(const Board* board, const Po
             break;
     }
     
-    auto it = std::remove_if(moves.begin(), moves.end(),
+    const auto it = std::remove_if(moves.begin(), moves.end(),
         [board, piece](const Move& move) {
             return wouldResultInCheck(board, move, piece->getColor());
         });
@@ -275,7 +275,7 @@ std::vector<Move> MoveGenerator::getCastlingMoves(const Board* board, Piece::Col
     std::vector<Move> moves;
     if (!board) return moves;
     
-    int rank = (color == Piece::Color::White) ? 0 : 7;
+    const int rank = (color == Piece::Color::White) ? 0 : 7;
     Position kingPos(4, rank);
     
     const Square* kingSquare = board->getSquare(kingPos);
@@ -303,8 +303,8 @@ bool MoveGenerator::canCastleKingside(const Board* board, Piece::Color color) {
     if (!board) return false;
     
     int rank = (color == Piece::Color::White) ? 0 : 7;
-    Position kingPos(4, rank);
-    Position rookPos(7, rank);
+    const Position kingPos(4, rank);
+    const Position rookPos(7, rank);
     
     const Square* kingSquare = board->getSquare(kingPos);
     const Square* rookSquare = board->getSquare(rookPos);

@@ -12,7 +12,7 @@ public:
 
     Move getMove(const Board* board, Piece::Color color) const;
     
-    void setSeed(unsigned int seed);
+    void setSeed(unsigned int seed) const;
 
 private:
     Piece* selectRandomPiece(const std::vector<Piece*>& pieces) const;

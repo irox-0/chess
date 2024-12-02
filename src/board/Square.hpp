@@ -11,7 +11,7 @@ public:
     };
 
     Square();
-    Square(Color color);
+    explicit Square(Color color);
     Square(Color color, Position position);
 
     Color getColor() const { return color; }

@@ -24,5 +24,4 @@ private:
     
     bool canCastleQueenside(const Board* board) const;
     
-    bool isSquareSafe(const Position& pos, const Board* board) const;
 };

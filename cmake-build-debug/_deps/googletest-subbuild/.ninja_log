@@ -1,0 +1,21 @@
+# ninja log v6
+2	55	7548347712354703	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-mkdir	8dd384e0ba262122
+2	55	7548347712354703	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-mkdir	8dd384e0ba262122
+55	5356	7548347765361869	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-download	7500db58041b6a13
+55	5356	7548347765361869	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-download	7500db58041b6a13
+5356	5476	7548347765406848	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-update	43c54b3116d9c4f1
+5356	5476	7548347765406848	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-update	43c54b3116d9c4f1
+5476	5525	7548347767054225	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-patch	8229fb07c3b38b98
+5476	5525	7548347767054225	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-patch	8229fb07c3b38b98
+5525	5575	7548347767550683	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-configure	82d9b055bf3982df
+5525	5575	7548347767550683	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-configure	82d9b055bf3982df
+5575	5626	7548347768066225	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-build	f916d6a235336af2
+5575	5626	7548347768066225	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-build	f916d6a235336af2
+5626	5677	7548347768568563	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-install	652aa79516be5702
+5626	5677	7548347768568563	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-install	652aa79516be5702
+5677	5726	7548347769070853	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-test	1ff16bfce0a6e1cf
+5677	5726	7548347769070853	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-test	1ff16bfce0a6e1cf
+5727	5795	7548347769752325	CMakeFiles/googletest-populate-complete	4cba963006726c2f
+5727	5795	7548347769752325	googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-done	4cba963006726c2f
+5727	5795	7548347769752325	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/CMakeFiles/googletest-populate-complete	4cba963006726c2f
+5727	5795	7548347769752325	D:/cpp/chess1/cmake-build-debug/_deps/googletest-subbuild/googletest-populate-prefix/src/googletest-populate-stamp/googletest-populate-done	4cba963006726c2f

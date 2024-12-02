@@ -37,6 +37,9 @@ private:
         std::cout << "- Enter moves in format: e2e4 or e2 e4\n";
         std::cout << "- Type 'quit' to exit\n";
         std::cout << "- Type 'help' for more commands\n\n";
+        std::cout << "Press Enter to start the game...";
+        std::string dummy;
+        std::getline(std::cin, dummy);
     }
 
     void choosePlayerColor() {
@@ -103,9 +106,9 @@ private:
             if (console.getMove(from, to)) {
                 const Square* fromSquare = game->getBoard()->getSquare(Position(from));
                 if (fromSquare && fromSquare->isOccupied()) {
-                    Piece* piece = fromSquare->getPiece();
+                    const Piece* piece = fromSquare->getPiece();
                     const Square* toSquare = game->getBoard()->getSquare(Position(to));
-                    bool isCapture = toSquare && toSquare->isOccupied() && 
+                    const bool isCapture = toSquare && toSquare->isOccupied() &&
                             toSquare->getPiece()->getColor() != piece->getColor();
 
                     Piece::Type capturedType = Piece::Type::Pawn;
@@ -138,12 +141,12 @@ private:
         Move aiMove = ai->getMove(game->getBoard(), game->getCurrentTurn());
     
         if (aiMove.getFrom().isValid() && aiMove.getTo().isValid()) {
-            std::string from = aiMove.getFrom().toAlgebraic();
-            std::string to = aiMove.getTo().toAlgebraic();
+            const std::string from = aiMove.getFrom().toAlgebraic();
+            const std::string to = aiMove.getTo().toAlgebraic();
         
             const Square* fromSquare = game->getBoard()->getSquare(aiMove.getFrom());
             if (fromSquare && fromSquare->isOccupied()) {
-                Piece* piece = fromSquare->getPiece();
+                const Piece* piece = fromSquare->getPiece();
                 const Square* toSquare = game->getBoard()->getSquare(aiMove.getTo());
                 bool isCapture = toSquare && toSquare->isOccupied() && 
                         toSquare->getPiece()->getColor() != piece->getColor();
@@ -170,7 +173,6 @@ private:
             std::cout << "AI couldn't make a move!\n";
         }
     }
-
     void checkGameState() {
         if (game->isCheck()) {
             std::cout << "\nCheck!\n";
@@ -182,7 +184,6 @@ private:
             std::cout << "\nStalemate!\n";
         }
     }
-
     void announceResult() {
         console.clearScreen();
         console.displayBoard();

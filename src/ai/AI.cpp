@@ -1,4 +1,4 @@
-#include "ai/AI.hpp"
+#include "AI.hpp"
 #include "moves/MoveGenerator.hpp"
 #include <chrono>
 #include <algorithm>
@@ -6,7 +6,7 @@
 AI::AI() : rng(std::chrono::system_clock::now().time_since_epoch().count()) {
 }
 
-void AI::setSeed(unsigned int seed) {
+void AI::setSeed(unsigned int seed) const {
     rng.seed(seed);
 }
 
