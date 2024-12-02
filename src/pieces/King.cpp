@@ -23,8 +23,8 @@ std::vector<Position> King::getPossibleMoves(const Board* board) const {
 
     Piece::Color opponentColor = (color == Color::White) ? Color::Black : Color::White;
 
-    for (const auto& [dx, dy] : kingOffsets) {
-        Position newPos = position + Position(dx, dy);
+    for (const auto& move : kingOffsets) {
+        Position newPos = position + Position(move.first, move.second);
         if (!board->isPositionValid(newPos)) continue;
 
         const Square* targetSquare = board->getSquare(newPos);
@@ -69,8 +69,8 @@ std::vector<Position> King::getAttackedSquares(const Board* board) const {
         {1, -1},  {1, 0},  {1, 1}
     };
     
-    for (const auto& [dx, dy] : kingOffsets) {
-        Position newPos = position + Position(dx, dy);
+    for (const auto& move : kingOffsets) {
+        Position newPos = position + Position(move.first, move.second);
         if (board->isPositionValid(newPos)) {
             moves.push_back(newPos);
         }

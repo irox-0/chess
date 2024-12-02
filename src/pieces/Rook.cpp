@@ -59,10 +59,10 @@ std::vector<Position> Rook::getPossibleMoves(const Board* board) const {
         {0, 1}, {0, -1}, {1, 0}, {-1, 0}  
     };
 
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = position;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!board->isPositionValid(current)) break;
             
             const Square* targetSquare = board->getSquare(current);

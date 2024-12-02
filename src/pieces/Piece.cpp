@@ -77,10 +77,10 @@ std::vector<Position> Piece::getStraightMoves(const Board* board) const {
         {0, 1}, {1, 0}, {0, -1}, {-1, 0}
     };
 
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = position;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!current.isValid()) break;
 
             const Square* square = board->getSquare(current);
@@ -106,10 +106,10 @@ std::vector<Position> Piece::getDiagonalMoves(const Board* board) const {
         {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
     };
 
-    for (const auto& [dx, dy] : directions) {
+    for (const auto& move : directions) {
         Position current = position;
         while (true) {
-            current = current + Position(dx, dy);
+            current = current + Position(move.first, move.second);
             if (!current.isValid()) break;
 
             const Square* square = board->getSquare(current);

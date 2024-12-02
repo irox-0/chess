@@ -22,8 +22,8 @@ std::vector<Position> Knight::getPossibleMoves(const Board* board) const {
         {1, -2}, {1, 2}, {2, -1}, {2, 1}
     };
 
-    for (const auto& [dx, dy] : knightOffsets) {
-        Position newPos = position + Position(dx, dy);
+    for (const auto& move : knightOffsets) {
+        Position newPos = position + Position(move.first, move.second);
         if (!board->isPositionValid(newPos)) continue;
 
         const Square* targetSquare = board->getSquare(newPos);
@@ -84,8 +84,8 @@ std::vector<Position> Knight::getKnightMoves() const {
     };
 
     std::vector<Position> moves;
-    for (const auto& [dx, dy] : knightOffsets) {
-        moves.push_back(position + Position(dx, dy));
+    for (const auto& move : knightOffsets) {
+        moves.push_back(position + Position(move.first, move.second));
     }
 
     return moves;
