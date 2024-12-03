@@ -90,11 +90,11 @@ private:
 
             checkGameState();
 
-            if (!isPlayerTurn && !game->isGameOver()) {
+            /*if (!isPlayerTurn && !game->isGameOver()) {
                 std::cout << "\nPress Enter to continue...";
                 std::string dummy;
                 std::getline(std::cin, dummy);
-            }
+            }*/
         }
 
         announceResult();
