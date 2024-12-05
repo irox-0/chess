@@ -1,5 +1,6 @@
 #pragma once
 #include "game/Game.hpp"
+#include "utils/Timer.hpp"
 #include <string>
 #include <functional>
 #include <iostream>
@@ -20,7 +21,9 @@ public:
     char getPromotionPiece() const;
     bool getYesNoInput(const std::string& prompt) const;
     std::string getStringInput(const std::string& prompt) const;
-
+    
+    void setTimer(Timer* t) { timer = t; }
+    void setPlayerColor(bool isWhite) { isPlayerWhite = isWhite; }
 
     void clearScreen() const;
     void showHelp() const;
@@ -36,6 +39,8 @@ public:
 private:
     Game* game;
     bool isRunning;
+    Timer* timer;  
+    bool isPlayerWhite;
     struct MoveInfo {
         std::string from;
         std::string to;
@@ -54,6 +59,9 @@ private:
     };
     std::vector<MoveInfo> moveHistory;
 
+    bool isPlayerTurn() const {
+        return (game->getCurrentTurn() == Piece::Color::White) == isPlayerWhite;
+    }
 
     void handleGameOver();
     void handleDraw();

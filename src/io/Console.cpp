@@ -21,7 +21,7 @@ Available commands:
 - quit
 )";
 
-Console::Console(Game* gamePtr) : game(gamePtr), isRunning(true) {
+Console::Console(Game* gamePtr) : game(gamePtr), isRunning(true), timer(nullptr){
     if (!game) {
         throw std::runtime_error("Game pointer cannot be null");
     }
@@ -56,7 +56,12 @@ void Console::displayGameStatus() const {
     std::cout << "\nTurn: " << colorToString(game->getCurrentTurn()) << "\n";
     
     if (!moveHistory.empty()) {
-        std::cout << "Last move: "  << moveHistory.back().from << " " << moveHistory.back().to << "\n";
+        std::cout << "Last move: " << moveHistory.back().from << " " 
+                    << moveHistory.back().to << "\n";
+    }
+    
+    if (timer && isPlayerTurn()) {
+        std::cout << "Time remaining: " << timer->getTimeString() << "\n";
     }
     
     if (game->getGameState()->isDrawOffered()) {
@@ -65,6 +70,7 @@ void Console::displayGameStatus() const {
                 << "\n";
     }
 }
+
 
 bool Console::getMove(std::string& from, std::string& to) {
     

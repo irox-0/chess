@@ -1,6 +1,7 @@
 #include "io/Console.hpp"
 #include "game/Game.hpp"
 #include "ai/AI.hpp"
+#include "utils/Timer.hpp"
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -13,13 +14,15 @@ public:
         game(std::make_unique<Game>()),
         ai(std::make_unique<AI>()),
         console(game.get()),
-        isPlayerWhite(true) 
+        isPlayerWhite(true),
+        timer(nullptr)
         {
         }
 
     void start() {
         showWelcomeMessage();
         choosePlayerColor();
+        setupTimer();
         playGame();
     }
 
@@ -28,6 +31,8 @@ private:
     std::unique_ptr<AI> ai;
     Console console;
     bool isPlayerWhite;
+    std::unique_ptr<Timer> timer;
+
 
     void showWelcomeMessage() {
         console.clearScreen();
@@ -41,6 +46,28 @@ private:
         std::string dummy;
         std::getline(std::cin, dummy);
     }
+
+    void setupTimer() {
+        int minutes;
+        while (true) {
+            std::cout << "Enter time limit in minutes: ";
+            std::string input;
+            std::getline(std::cin, input);
+            try {
+                minutes = std::stoi(input);
+                if (minutes > 0) {
+                    break;
+                }
+                std::cout << "Please enter a positive number.\n";
+            } catch (...) {
+                std::cout << "Invalid input. Please enter a number.\n";
+            }
+        }
+        timer = std::make_unique<Timer>(minutes);
+        console.setTimer(timer.get());  
+        console.setPlayerColor(isPlayerWhite);  
+    }
+
 
     void choosePlayerColor() {
         while (true) {
@@ -58,9 +85,6 @@ private:
             std::cout << "Invalid input. Please enter 'w' for White or 'b' for Black.\n";
         }
         std::cout << "\nYou are playing as " << (isPlayerWhite ? "White" : "Black") << ".\n";
-        std::cout << "Press Enter to start the game...";
-        std::string dummy;
-        std::getline(std::cin, dummy);
     }
 
     void playGame() {
@@ -102,7 +126,27 @@ private:
 
     void handlePlayerMove() {
         std::string from, to;
+        timer->start();
+        bool invalidMove = false;  
+        
         while (true) {
+            if (timer->isTimeUp()) {
+                std::cout << "\nTime's up! You lost the game.\n";
+                game->resign(isPlayerWhite ? Piece::Color::White : Piece::Color::Black);
+                return;
+            }
+            
+            if (!invalidMove) {  
+                console.clearScreen();
+            }
+            console.displayBoard();
+            console.displayGameStatus();
+            
+            if (invalidMove) {
+                std::cout << "Invalid move! Please try again.\n";
+                invalidMove = false;
+            }
+            
             if (console.getMove(from, to)) {
                 const Square* fromSquare = game->getBoard()->getSquare(Position(from));
                 if (fromSquare && fromSquare->isOccupied()) {
@@ -119,20 +163,17 @@ private:
                     }
 
                     if (game->makeMove(from, to)) {
+                        timer->stop();
                         console.addMoveToHistory(from, to, piece->getType(), 
                                         piece->getColor(), isCapture,
                                         capturedType, capturedColor);
-                        console.clearScreen();
-                        console.displayBoard();
-                        console.displayGameStatus();
                         return;
                     }
                 }
-                std::cout << "Invalid move! Please try again.\n";
-                console.displayBoard();
+                invalidMove = true;  
             }
         }
-    }   
+    } 
     
 
     void handleAIMove() {
@@ -189,27 +230,31 @@ private:
         console.displayBoard();
         std::cout << "\n=== Game Over! ===\n";
 
-        GameState::Result result = game->getResult();
-        switch (result) {
-            case GameState::Result::WhiteWin:
-                std::cout << "White wins";
-                if (!isPlayerWhite) std::cout << " (AI wins)";
-                std::cout << "!\n";
-                break;
-            case GameState::Result::BlackWin:
-                std::cout << "Black wins";
-                if (isPlayerWhite) std::cout << " (AI wins)";
-                std::cout << "!\n";
-                break;
-            case GameState::Result::Draw:
-                std::cout << "Game is drawn!\n";
-                break;
-            case GameState::Result::Stalemate:
-                std::cout << "Game ends in stalemate!\n";
-                break;
-            default:
-                std::cout << "Game ended with unknown result!\n";
-                break;
+        if (timer && timer->isTimeUp()) {
+            std::cout << "Time's up! " << (isPlayerWhite ? "Black" : "White") << " wins!\n";
+        } else {
+            GameState::Result result = game->getResult();
+            switch (result) {
+                case GameState::Result::WhiteWin:
+                    std::cout << "White wins";
+                    if (!isPlayerWhite) std::cout << " (AI wins)";
+                    std::cout << "!\n";
+                    break;
+                case GameState::Result::BlackWin:
+                    std::cout << "Black wins";
+                    if (isPlayerWhite) std::cout << " (AI wins)";
+                    std::cout << "!\n";
+                    break;
+                case GameState::Result::Draw:
+                    std::cout << "Game is drawn!\n";
+                    break;
+                case GameState::Result::Stalemate:
+                    std::cout << "Game ends in stalemate!\n";
+                    break;
+                default:
+                    std::cout << "Game ended with unknown result!\n";
+                    break;
+            }
         }
 
         std::cout << "\nPress Enter to exit...";

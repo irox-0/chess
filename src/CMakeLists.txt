@@ -19,6 +19,7 @@ add_library(chess_lib STATIC
     io/Console.cpp
     utils/GameLogger.cpp
     ai/AI.cpp
+    utils/Timer.cpp
 )
 
 target_include_directories(chess_lib
