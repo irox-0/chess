@@ -4,7 +4,8 @@
 #include <fstream>
 #include "game/Game.hpp"
 #include "moves/Move.hpp"
-#include <direct.h>
+#include <sys/stat.h>
+#include <errno.h>
 
 class GameLogger {
 public:

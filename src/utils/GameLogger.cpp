@@ -65,12 +65,19 @@ void GameLogger::logMove(const std::string& from, const std::string& to,
 
 bool GameLogger::saveGame(const std::string& filename) {
     #ifdef _WIN32
-        _mkdir("../resources");
-        _mkdir("../resources/saved_games");
+        int result1 = mkdir("../resources");
+        int result2 = mkdir("../resources/saved_games");
     #else
-        mkdir("../resources", 0777);
-        mkdir("../resources/saved_games", 0777);
+        int result1 = mkdir("../resources", 0777);
+        int result2 = mkdir("../resources/saved_games", 0777);
     #endif
+
+    // Проверяем, что директории созданы или уже существуют
+    if ((result1 != 0 && errno != EEXIST) || 
+        (result2 != 0 && errno != EEXIST)) {
+        std::cerr << "Error creating directories" << std::endl;
+        return false;
+    }
 
     std::string fullPath = SAVE_DIRECTORY + filename;
     std::ofstream file(fullPath);
