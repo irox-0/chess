@@ -2,6 +2,7 @@
 #include "game/Game.hpp"
 #include "ai/AI.hpp"
 #include "utils/Timer.hpp"
+#include "utils/GameLogger.hpp"
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -14,27 +15,33 @@ public:
         game(std::make_unique<Game>()),
         ai(std::make_unique<AI>()),
         console(game.get()),
+        logger(std::make_unique<GameLogger>(game.get())),
         isPlayerWhite(true),
         timer(nullptr)
         {
         }
 
-    void start() {
+    void startNewGame() {
         showWelcomeMessage();
         choosePlayerColor();
         setupTimer();
         playGame();
     }
 
+    void start() {
+        showMainMenu();
+    }
+    
 private:
     std::unique_ptr<Game> game;
     std::unique_ptr<AI> ai;
     Console console;
     bool isPlayerWhite;
     std::unique_ptr<Timer> timer;
+    std::unique_ptr<GameLogger> logger;
 
 
-    void showWelcomeMessage() {
+     void showWelcomeMessage() {
         console.clearScreen();
         std::cout << "Welcome to Chess Game!\n";
         std::cout << "===================\n\n";
@@ -45,6 +52,97 @@ private:
         std::cout << "Press Enter to start the game...";
         std::string dummy;
         std::getline(std::cin, dummy);
+    }
+
+
+    void showMainMenu() {
+        while (true) {
+            console.clearScreen();
+            std::cout << "Chess Game Menu\n";
+            std::cout << "===============\n";
+            std::cout << "1. New Game\n";
+            std::cout << "2. Load Game from File\n";
+            std::cout << "3. Exit\n\n";
+            std::cout << "Enter your choice (1-3): ";
+            
+            std::string input;
+            std::getline(std::cin, input);
+            
+            if (input == "1") {
+                startNewGame();
+                break;
+            } else if (input == "2") {
+                loadGameFromFile();
+                break;
+            } else if (input == "3") {
+                exit(0);
+            }
+            
+            std::cout << "Invalid choice. Press Enter to try again...";
+            std::getline(std::cin, input);
+        }
+    }
+
+    
+
+    void loadGameFromFile() {
+        console.clearScreen();
+        std::cout << "Enter filename to load (or press Enter to return): ";
+        std::string filename;
+        std::getline(std::cin, filename);
+        
+        if (filename.empty()) {
+            showMainMenu();
+            return;
+        }
+        
+        if (logger->loadGame(filename)) {
+            std::cout << "\nGame loaded successfully!\n";
+            
+            choosePlayerColor();
+            
+            playLoadedGame();
+        } else {
+            std::cout << "\nError loading game!\n";
+            std::cout << "Press Enter to return to menu...";
+            std::string dummy;
+            std::getline(std::cin, dummy);
+            showMainMenu();
+        }
+    }
+
+    void playLoadedGame() {
+        setupTimer();
+        console.setTimer(timer.get());
+        console.setPlayerColor(isPlayerWhite);
+
+        while (!game->isGameOver()) {
+            console.clearScreen();
+            console.displayBoard();
+            console.displayGameStatus();
+
+            bool isPlayerTurn = (game->getCurrentTurn() == Piece::Color::White) == isPlayerWhite;
+
+            if (isPlayerTurn) {
+                std::cout << "\nYour turn!\n";
+                handlePlayerMove();
+
+                if (game->getCurrentTurn() == Piece::Color::White && isPlayerWhite ||
+                    game->getCurrentTurn() == Piece::Color::Black && !isPlayerWhite) {
+                    continue;
+                }
+            } else {
+                handleAIMove();
+            }
+
+            console.clearScreen();
+            console.displayBoard();
+            console.displayGameStatus();
+
+            checkGameState();
+        }
+
+        announceResult();
     }
 
     void setupTimer() {
@@ -58,7 +156,7 @@ private:
                 if (minutes > 0) {
                     break;
                 }
-                std::cout << "Please enter a positive number.\n";
+                std::cout << "Please enter a positive and integer number.\n";
             } catch (...) {
                 std::cout << "Invalid input. Please enter a number.\n";
             }
@@ -164,12 +262,20 @@ private:
 
                     if (game->makeMove(from, to)) {
                         timer->stop();
+
+                            logger->logMove(from, to, piece->getType(), piece->getColor(),
+                                            isCapture, game->isCheck(), game->isCheckmate());
+        
+                        console.addMoveToHistory(from, to, piece->getType(), 
+                                            piece->getColor(), isCapture,
+                        capturedType, capturedColor);
                         console.addMoveToHistory(from, to, piece->getType(), 
                                         piece->getColor(), isCapture,
                                         capturedType, capturedColor);
                         return;
                     }
                 }
+
                 invalidMove = true;  
             }
         }
@@ -177,7 +283,7 @@ private:
     
 
     void handleAIMove() {
-        std::cout << "\nAI is thinking...\n";
+        //std::cout << "\nAI is thinking...\n";
     
         Move aiMove = ai->getMove(game->getBoard(), game->getCurrentTurn());
     
@@ -202,12 +308,15 @@ private:
                 std::cout << "AI moves: " << from << " to " << to << "\n";
             
                 if (game->makeMove(from, to)) {
-                    console.addMoveToHistory(from, to, piece->getType(), 
-                                piece->getColor(), isCapture,
-                                capturedType, capturedColor);
-                    console.clearScreen();
-                    console.displayBoard();
-                    console.displayGameStatus();
+                    logger->logMove(from, to, piece->getType(), piece->getColor(),
+                                    isCapture, game->isCheck(), game->isCheckmate());
+                        
+                console.addMoveToHistory(from, to, piece->getType(), 
+                        piece->getColor(), isCapture,
+                        capturedType, capturedColor);
+                console.clearScreen();
+                console.displayBoard();
+                console.displayGameStatus();
                 }
             }
         } else {
@@ -254,6 +363,24 @@ private:
                 default:
                     std::cout << "Game ended with unknown result!\n";
                     break;
+            }
+        }
+
+        std::cout << "\nWould you like to save this game? (y/n): ";
+        std::string response;
+        std::getline(std::cin, response);
+        
+        if (!response.empty() && std::tolower(response[0]) == 'y') {
+            std::cout << "Enter filename to save: ";
+            std::string filename;
+            std::getline(std::cin, filename);
+            
+            if (!filename.empty()) {
+                if (logger->saveGame(filename)) {
+                    std::cout << "Game saved successfully!\n";
+                } else {
+                    std::cout << "Error saving game!\n";
+                }
             }
         }
 
