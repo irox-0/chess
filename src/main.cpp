@@ -283,7 +283,7 @@ private:
     
 
     void handleAIMove() {
-        //std::cout << "\nAI is thinking...\n";
+        std::cout << "\nAI is thinking...\n";
     
         Move aiMove = ai->getMove(game->getBoard(), game->getCurrentTurn());
     
@@ -305,7 +305,7 @@ private:
                     capturedColor = toSquare->getPiece()->getColor();
                 }
 
-                std::cout << "AI moves: " << from << " to " << to << "\n";
+                //std::cout << "AI moves: " << from << " to " << to << "\n";
             
                 if (game->makeMove(from, to)) {
                     logger->logMove(from, to, piece->getType(), piece->getColor(),
