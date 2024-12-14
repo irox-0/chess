@@ -54,7 +54,9 @@ void Console::displayBoard() const {
 
 void Console::displayGameStatus() const {
     std::cout << "\nTurn: " << colorToString(game->getCurrentTurn()) << "\n";
-    
+    if (game->isCheck()) {
+        std::cout << "CHECK! " << std::endl;
+    }
     if (!moveHistory.empty()) {
         std::cout << "Last move: " << moveHistory.back().from << " " 
                     << moveHistory.back().to << "\n";
